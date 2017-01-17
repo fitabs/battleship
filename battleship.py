@@ -4,7 +4,6 @@
 """Проверка: допустимое значение числа"""
 def range_int(low_value, higt_value, input_text, message = "Число вне диапазона"):
 
-    variable = 0
     try:
         variable = int(input(input_text))
         """Проверка: допустимое значение числа"""
@@ -12,15 +11,15 @@ def range_int(low_value, higt_value, input_text, message = "Число вне д
             return variable
         else:
             print(message)
-            range_int(low_value, higt_value, input_text, message = "Число вне диапазона")
+            range_int(low_value, higt_value, input_text, message="Число вне диапазона")
     except:
         print("Вы ввели не число!")
-        range_int(low_value, higt_value, input_text, message = "Число вне диапазона")
+        range_int(low_value, higt_value, input_text, message="Число вне диапазона")
 
 
 class Board(object):
     """docstring for Board"""
-    def __init__(self, x, y, alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+    def __init__(self, x, y, alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
         self.x = x
         self.y = y
         self.alpha = alpha
@@ -154,8 +153,8 @@ if __name__ == '__main__':
 
     num_players = range_int(1, 2, "Введите количество игроков (1/2): ", "Могут играть только 1 или 2 игрока")
 
-    x = 10 #range_int(5, 20, "Введите ширину доски: ", "Допустимая ширина доски 5 - 20")
-    y = 10 #range_int(5, 20, "Введите высоту доски: ", "Допустимая высота доски 5 - 20")
+    x = range_int(5, 20, "Введите ширину доски: ", "Допустимая ширина доски 5 - 20")
+    y = range_int(5, 20, "Введите высоту доски: ", "Допустимая высота доски 5 - 20")
     os.system('cls')
 
     print ("{:*^110}".format(" Игровая доска "))
