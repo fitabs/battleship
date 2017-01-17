@@ -25,15 +25,15 @@ def search_char(letter):
     print('Введен не верный символ, необходимо "A-Z"')
 
 
-def full_data():
-    year = str(datetime.now().year)
-    month = str(datetime.now().month)
-    day = str(datetime.now().day)
-    hour = str(datetime.now().hour)
-    minute = str(datetime.now().minute)
-    second = str(datetime.now().second)
-    full_data = year + '-' + month + '-' + day + '_' + hour + '-' + minute + '-' + second
-    return full_data
+# def full_data():
+#     year = str(datetime.now().year)
+#     month = str(datetime.now().month)
+#     day = str(datetime.now().day)
+#     hour = str(datetime.now().hour)
+#     minute = str(datetime.now().minute)
+#     second = str(datetime.now().second)
+#     full_data = year + '-' + month + '-' + day + '_' + hour + '-' + minute + '-' + second
+#     return full_data
 
 
 class Board(object):
@@ -72,11 +72,11 @@ class MyShips(Board):
         all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
         num_ships = 3
         for x in range(num_ships):
-            type = int(input("Количество палуб коробля (1-4) "))
-            if all_ships[type] > 0:
-                for x in range(type):
+            type_ship = int(input("Количество палуб коробля (1-4) "))
+            if all_ships[type_ship] > 0:
+                for x in range(type_ship):
                     self.printBoard(self.draw_ship(board))
-                    all_ships[type] -= 1
+                    all_ships[type_ship] -= 1
             else:
                 print("Кораблей данного типа больше нет")
                 print(all_ships)
@@ -110,7 +110,7 @@ class LoseOrWin(Board):
         guess_alpha = coordinates[0]
         guess_col = search_char(guess_alpha.lower())
         guess_row = int(coordinates[1])
-        os.system('cls')
+        #os.system('cls')
 
 
         if hide_comp_board[guess_row][guess_col] == u'\u2588':
@@ -148,8 +148,8 @@ if __name__ == '__main__':
     y = 10 # range_int(5, 20, "Введите высоту доски: ", "Допустимая высота доски 5 - 20")
 
     print ("{:*^110}".format(" Игровая доска "))
-    player_one = Board(x, y)
-    test_board = player_one.generateBoard()
+    player_one_board = Board(x, y)
+    test_board = player_one_board.generateBoard()
     for row in test_board:
         print("{:^110}".format(" ".join(row)))
     ship = MyShips(x, y)
@@ -165,16 +165,16 @@ if __name__ == '__main__':
     # excel.save('./data/' + full_data() + '.xlsx')
 
     print("{:*^110}".format(" Игровая доска "))
-    player_two = Board(x, y)
-    test_board = player_two.generateBoard()
+    player_two_board = Board(x, y)
+    test_board = player_two_board.generateBoard()
     for row in test_board:
         print("{:^110}".format(" ".join(row)))
     ship = MyShips(x, y)
     board_player_two = ship.choose_ship(test_board)
 
 
-    attack_board_player_1 = player_one.generateBoard()
-    attack_board_player_2 = player_two.generateBoard()
+    attack_board_player_1 = player_one_board.generateBoard()
+    attack_board_player_2 = player_two_board.generateBoard()
 
 
     player_1 = LoseOrWin(x, y)
