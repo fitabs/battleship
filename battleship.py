@@ -115,8 +115,8 @@ class LoseOrWin(Board):
 
         if hide_comp_board[guess_row][guess_col] == u'\u2588':
             print ("{:*^110}".format(" Ты попал! "))
-            show_comp_board[guess_row][guess_col] = "*"
-            hide_comp_board[guess_row][guess_col] = "*"
+            show_comp_board[guess_row][guess_col] = u'\u2591'
+            hide_comp_board[guess_row][guess_col] = u'\u2591'
             marker = "*"
             win += 1
         else:
@@ -127,8 +127,8 @@ class LoseOrWin(Board):
                 marker = "X"
             else:
                 print ("{:*^110}".format(" Ты промазал! "))
-                show_comp_board[guess_row][guess_col] = "X"
-                hide_comp_board[guess_row][guess_col] = "X"
+                show_comp_board[guess_row][guess_col] = "*"
+                hide_comp_board[guess_row][guess_col] = "*"
                 marker = "X"
         board = self.modificateBoard(show_my_board, show_comp_board)
         self.printBoard(board)
