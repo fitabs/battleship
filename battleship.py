@@ -70,7 +70,7 @@ class MyShips(Board):
     def choose_ship(self, board):
         self.board = board
         all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
-        num_ships = 1
+        num_ships = 3
         for x in range(num_ships):
             type = int(input("Количество палуб коробля (1-4) "))
             if all_ships[type] > 0:
