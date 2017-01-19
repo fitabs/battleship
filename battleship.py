@@ -42,6 +42,7 @@ class Board(object):
         self.x = x
         self.y = y
 
+
     def generateBoard(self):
         board = []
         count_line = 0
@@ -52,16 +53,19 @@ class Board(object):
             board.append([str("{:02d}".format(count_line))] + ["O"] * self.x)
         return(board)
 
+
     def modificateBoard(self, board_1, board_2):
         modificate_board = []
         for line in range(self.y + 1):
             modificate_board.append(board_1[line] + [" "] * 15 + board_2[line])
         return(modificate_board)
 
+
     def printBoard(self, board):
         print("{:*^55}".format(" Твоя доска. ") + "{:*^55}".format(" Доска соперника. "))
         for row in board:
             print("{:^110}".format(" ".join(row)))
+
 
 
 class MyShips(Board):
@@ -70,18 +74,26 @@ class MyShips(Board):
     def choose_ship(self, board):
         self.board = board
         all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
-        num_ships = 3
-        for x in range(num_ships):
-            type_ship = int(input("Количество палуб коробля (1-4) "))
-            if all_ships[type_ship] > 0:
-                for x in range(type_ship):
-                    self.printBoard(self.draw_ship(board))
+        num_ships = 10
+
+
+        def ship_range(remain):
+            for x in range(remain):
+                type_ship = int(input("Количество палуб коробля (1-4) "))
+                if all_ships[type_ship] > 0:
                     all_ships[type_ship] -= 1
-            else:
-                print("Кораблей данного типа больше нет")
-                print(all_ships)
-                num_ships += 1 # чот ничо не пашет=\
-        return board
+                    for x in range(type_ship):
+                        self.printBoard(self.draw_ship(board))
+                    print(all_ships)
+                else:
+                    print("Кораблей данного типа больше нет")
+                    print(all_ships)
+                    if sum(all_ships.values()) != 0:
+                        ship_range(remain - x)
+            return board
+
+
+        ship_range(num_ships)
 
 
     def draw_ship(self, board):
@@ -100,11 +112,10 @@ class LoseOrWin(Board):
 
 
     def score(self, show_my_board, show_comp_board, hide_comp_board):
-        self.show_my_board = show_my_board
-        self.show_comp_board = show_comp_board
+        # self.show_my_board = show_my_board
+        # self.show_comp_board = show_comp_board
 
         win = 0
-        marker = ''
 
         coordinates = input("Введите координаты (Например B-4): ").split('-')
         guess_alpha = coordinates[0]
@@ -113,23 +124,20 @@ class LoseOrWin(Board):
         #os.system('cls')
 
 
-        if hide_comp_board[guess_row][guess_col] == u'\u2588':
+        if hide_comp_board[guess_row][guess_col] == u'\u2588': # Знак █ █ █ Unicode
             print ("{:*^110}".format(" Ты попал! "))
-            show_comp_board[guess_row][guess_col] = u'\u2591'
-            hide_comp_board[guess_row][guess_col] = u'\u2591'
-            marker = "*"
+            show_comp_board[guess_row][guess_col] = u'\u2591' # Знак ... █... Unicode
+            hide_comp_board[guess_row][guess_col] = u'\u2591' # Знак ... █... Unicode
             win += 1
         else:
             if (guess_row < 0 or guess_row > len(show_my_board)) or (guess_col < 0 or guess_col > len(show_my_board)):
                 print ("{:*^110}".format(" Oops, введены координаты за пределами доски. "))
             elif show_comp_board[guess_row][guess_col] == "X" or show_comp_board[guess_row][guess_col] == "*":
                 print ("{:*^110}".format(" Будь внимательнее! Ты уже стрелял по этой точке. "))
-                marker = "X"
             else:
                 print ("{:*^110}".format(" Ты промазал! "))
                 show_comp_board[guess_row][guess_col] = "*"
                 hide_comp_board[guess_row][guess_col] = "*"
-                marker = "X"
         board = self.modificateBoard(show_my_board, show_comp_board)
         self.printBoard(board)
         return win, hide_comp_board
@@ -183,8 +191,8 @@ if __name__ == '__main__':
     turn = x * y
     batch = 0
     for batch in range(turn):
-        board_player_one = board_player_one
-        board_player_two = board_player_two
+        # board_player_one = board_player_one
+        # board_player_two = board_player_two
 
         if batch % 2 == 0:
             print("\nХод игрока №1")
