@@ -1,6 +1,3 @@
-# coding = utf-8
-
-
 """Проверка: допустимое значение числа"""
 def range_int(low_value, higt_value, input_text, message = "Число вне диапазона"):
 
@@ -19,7 +16,7 @@ def range_int(low_value, higt_value, input_text, message = "Число вне д
 
 def search_char(letter):
     for char in range(26):
-        if ascii_letters[char] == letter:
+        if ascii_letters[char] == letter.lower():
             return char + 1
             break
     print('Введен не верный символ, необходимо "A-Z"')
@@ -42,7 +39,6 @@ class Board(object):
         self.x = x
         self.y = y
 
-
     def generateBoard(self):
         board = []
         count_line = 0
@@ -53,13 +49,11 @@ class Board(object):
             board.append([str("{:02d}".format(count_line))] + ["O"] * self.x)
         return(board)
 
-
     def modificateBoard(self, board_1, board_2):
         modificate_board = []
         for line in range(self.y + 1):
             modificate_board.append(board_1[line] + [" "] * 15 + board_2[line])
         return(modificate_board)
-
 
     def printBoard(self, board):
         print("{:*^55}".format(" Твоя доска. ") + "{:*^55}".format(" Доска соперника. "))
@@ -67,24 +61,37 @@ class Board(object):
             print("{:^110}".format(" ".join(row)))
 
 
-
 class MyShips(Board):
-
 
     def choose_ship(self, board):
         self.board = board
         all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
         num_ships = 10
 
-
         def ship_range(remain):
             for x in range(remain):
                 type_ship = int(input("Количество палуб коробля (1-4) "))
                 if all_ships[type_ship] > 0:
                     all_ships[type_ship] -= 1
-                    for x in range(type_ship):
-                        self.printBoard(self.draw_ship(board))
-                    print(all_ships)
+
+                    ship_x = range_int(1, 20, "Введите Х корабля: ")
+                    ship_y = range_int(1, 20, "Введите Y корабля: ")
+
+                    if type_ship == 1:
+                        for x in range(type_ship):
+                            self.printBoard(self.draw_ship(board, ship_x + x, ship_y))
+                        print(all_ships)
+                    else:
+                        ship_position = range_int(1, 2, "Размещение корабля(1-горизонт, 2-вертикально): ")
+
+                        if ship_position == 1:
+                            for x in range(type_ship):
+                                self.printBoard(self.draw_ship(board, ship_x + x, ship_y))
+                            print(all_ships)
+                        elif ship_position == 2:
+                            for x in range(type_ship):
+                                self.printBoard(self.draw_ship(board, ship_x, ship_y + x))
+                            print(all_ships)
                 else:
                     print("Кораблей данного типа больше нет")
                     print(all_ships)
@@ -92,13 +99,12 @@ class MyShips(Board):
                         ship_range(remain - x)
             return board
 
-
         ship_range(num_ships)
 
 
-    def draw_ship(self, board):
-        ship_x = range_int(1, 20, "Введите Х корабля: ")
-        ship_y = range_int(1, 20, "Введите Y корабля: ")
+    def draw_ship(self, board, ship_x, ship_y):
+        # ship_x = range_int(1, 20, "Введите Х корабля: ")
+        # ship_y = range_int(1, 20, "Введите Y корабля: ")
         if board[ship_y][ship_x] == "O":
         # if board[ship_y][ship_x] == "O" and \
         #                 board[ship_y-1][ship_x] == "O" and board[ship_y+1][ship_x] == "O" and \
@@ -110,16 +116,12 @@ class MyShips(Board):
 class LoseOrWin(Board):
     """Нужен модуль - from random import randint"""
 
-
     def score(self, show_my_board, show_comp_board, hide_comp_board):
-        # self.show_my_board = show_my_board
-        # self.show_comp_board = show_comp_board
-
         win = 0
 
         coordinates = input("Введите координаты (Например B-4): ").split('-')
         guess_alpha = coordinates[0]
-        guess_col = search_char(guess_alpha.lower())
+        guess_col = search_char(guess_alpha)
         guess_row = int(coordinates[1])
         #os.system('cls')
 
@@ -191,8 +193,6 @@ if __name__ == '__main__':
     turn = x * y
     batch = 0
     for batch in range(turn):
-        # board_player_one = board_player_one
-        # board_player_two = board_player_two
 
         if batch % 2 == 0:
             print("\nХод игрока №1")
