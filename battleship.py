@@ -63,8 +63,7 @@ class MyShips(Board):
                 if all_ships[type_ship] > 0:
 
                     coordinates = input("Введите координаты (Например B4): ")
-                    ship_alpha = coordinates[0]
-                    ship_x = search_char(ship_alpha)
+                    ship_x = search_char(coordinates[0])
                     if len(coordinates) == 2:
                         ship_y = int(coordinates[1])
                     elif len(coordinates) == 3:
