@@ -1,6 +1,5 @@
 """Проверка: допустимое значение числа"""
 def range_int(low_value, higt_value, input_text, message = "Число вне диапазона"):
-
     try:
         variable = int(input(input_text))
         """Проверка: допустимое значение числа"""
@@ -20,17 +19,6 @@ def search_char(letter):
             return char + 1
             break
     print('Введен не верный символ, необходимо "A-Z"')
-
-
-# def full_data():
-#     year = str(datetime.now().year)
-#     month = str(datetime.now().month)
-#     day = str(datetime.now().day)
-#     hour = str(datetime.now().hour)
-#     minute = str(datetime.now().minute)
-#     second = str(datetime.now().second)
-#     full_data = year + '-' + month + '-' + day + '_' + hour + '-' + minute + '-' + second
-#     return full_data
 
 
 class Board(object):
@@ -55,62 +43,143 @@ class Board(object):
             modificate_board.append(board_1[line] + [" "] * 15 + board_2[line])
         return(modificate_board)
 
-    def printBoard(self, board):
-        print("{:*^55}".format(" Твоя доска. ") + "{:*^55}".format(" Доска соперника. "))
+    def printBoard(self, board, message="{:*^55}".format(" Твоя доска. ") + "{:*^55}".format(" Доска соперника. ")):
+        print(message)
         for row in board:
             print("{:^110}".format(" ".join(row)))
 
 
 class MyShips(Board):
 
-    def choose_ship(self, board):
+    def choose_ship(self, board, all_ship_coords=[]):
         self.board = board
+        self.all_ship_coords = all_ship_coords
         all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
         num_ships = 10
 
         def ship_range(remain):
-            for x in range(remain):
-                type_ship = int(input("Количество палуб коробля (1-4) "))
+            for ship in range(remain):
+                type_ship = range_int(1, 4, "Количество палуб коробля (1-4) ")
                 if all_ships[type_ship] > 0:
-                    all_ships[type_ship] -= 1
 
-                    ship_x = range_int(1, 20, "Введите Х корабля: ")
-                    ship_y = range_int(1, 20, "Введите Y корабля: ")
+                    coordinates = input("Введите координаты (Например B4): ")
+                    ship_alpha = coordinates[0]
+                    ship_x = search_char(ship_alpha)
+                    if len(coordinates) == 2:
+                        ship_y = int(coordinates[1])
+                    elif len(coordinates) == 3:
+                        ship_y = int(coordinates[1] + coordinates[2])
 
                     if type_ship == 1:
-                        for x in range(type_ship):
-                            self.printBoard(self.draw_ship(board, ship_x + x, ship_y))
-                        print(all_ships)
+                        coords = []
+                        coords.append(ship_x)
+                        coords.append(ship_y)
+                        if coords in all_ship_coords or \
+                                        [coords[0] + 1, coords[1]] in all_ship_coords or \
+                                        [coords[0] - 1, coords[1]] in all_ship_coords or \
+                                        [coords[0] + 1, coords[1] + 1] in all_ship_coords or \
+                                        [coords[0] + 1, coords[1] - 1] in all_ship_coords or \
+                                        [coords[0] - 1, coords[1] + 1] in all_ship_coords or \
+                                        [coords[0] - 1, coords[1] - 1] in all_ship_coords or \
+                                [coords[0], coords[1] + 1] in all_ship_coords or \
+                                        [coords[0], coords[1] - 1] in all_ship_coords:
+                            print("Слишком близко к соседнему кораблю")
+                            print(all_ships)
+                            if sum(all_ships.values()) != 0:
+                                ship_range(remain - ship)
+                        else:
+                            all_ships[type_ship] -= 1
+                            all_ship_coords.append(coords)
+                            board[ship_y][ship_x] = u'\u2588'
+                            os.system('cls')
+                            self.printBoard(board, message="{:*^110}".format(" Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
+                            print(all_ships)
+                            print(all_ship_coords)
                     else:
-                        ship_position = range_int(1, 2, "Размещение корабля(1-горизонт, 2-вертикально): ")
+                        ship_position = range_int(1, 2, "Размещение корабля(1-горизонтально, 2-вертикально): ")
 
                         if ship_position == 1:
+                            test_result = 0
+                            """ Проверка всех палуб корабля """
                             for x in range(type_ship):
-                                self.printBoard(self.draw_ship(board, ship_x + x, ship_y))
-                            print(all_ships)
+                                coords = []
+                                coords.append(ship_x + x)
+                                coords.append(ship_y)
+                                if coords in all_ship_coords or \
+                                                [ship_x + type_ship, coords[1]] in all_ship_coords or \
+                                                [ship_x - 1, coords[1]] in all_ship_coords or \
+                                                [coords[0] + 1, coords[1] + 1] in all_ship_coords or \
+                                                [coords[0] + 1, coords[1] - 1] in all_ship_coords or \
+                                                [coords[0] - 1, coords[1] + 1] in all_ship_coords or \
+                                                [coords[0] - 1, coords[1] - 1] in all_ship_coords or \
+                                                [coords[0], coords[1] + 1] in all_ship_coords or \
+                                                [coords[0], coords[1] - 1] in all_ship_coords or ship_x + type_ship > 11:
+                                    print("Близко к соседнему кораблю либо за пределами доски")
+                                    print(all_ships)
+                                    if sum(all_ships.values()) != 0:
+                                        ship_range(remain - ship)
+                                else:
+                                    test_result += 1
+                            """ Если проверка пройдена - печатаем все палубы на доске """
+                            if test_result == type_ship:
+                                all_ships[type_ship] -= 1
+                                for x in range(type_ship):
+                                    coords = []
+                                    coords.append(ship_x + x)
+                                    coords.append(ship_y)
+                                    all_ship_coords.append(coords)
+                                    board[ship_y][ship_x + x] = u'\u2588'
+                                    os.system('cls')
+                                    self.printBoard(board, message="{:*^110}".format(" Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
+                                print(all_ships)
+                                print(all_ship_coords)
+
                         elif ship_position == 2:
-                            for x in range(type_ship):
-                                self.printBoard(self.draw_ship(board, ship_x, ship_y + x))
-                            print(all_ships)
+                            test_result = 0
+                            """ Проверка всех палуб корабля """
+                            for y in range(type_ship):
+                                coords = []
+                                coords.append(ship_x)
+                                coords.append(ship_y + y)
+                                if coords in all_ship_coords or \
+                                                [coords[0] + 1, coords[1]] in all_ship_coords or \
+                                                [coords[0] - 1, coords[1]] in all_ship_coords or \
+                                                [coords[0] + 1, coords[1] + 1] in all_ship_coords or \
+                                                [coords[0] + 1, coords[1] - 1] in all_ship_coords or \
+                                                [coords[0] - 1, coords[1] + 1] in all_ship_coords or \
+                                                [coords[0] - 1, coords[1] - 1] in all_ship_coords or \
+                                        [coords[0], ship_y + type_ship] in all_ship_coords or \
+                                                [coords[0], ship_y - 1] in all_ship_coords or ship_y + type_ship > 11:
+                                    print("Близко к соседнему кораблю либо за пределами доски")
+                                    print(all_ships)
+                                    if sum(all_ships.values()) != 0:
+                                        ship_range(remain - ship)
+                                else:
+                                    test_result += 1
+                            """ Если проверка пройдена - печатаем все палубы на доске """
+                            if test_result == type_ship:
+                                all_ships[type_ship] -= 1
+                                for y in range(type_ship):
+                                    coords = []
+                                    coords.append(ship_x)
+                                    coords.append(ship_y + y)
+                                    all_ship_coords.append(coords)
+                                    board[ship_y + y][ship_x] = u'\u2588'
+                                    os.system('cls')
+                                    self.printBoard(board, message="{:*^110}".format(" Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
+                                print(all_ships)
+                                print(all_ship_coords)
+                        else:
+                            print("Размещение корабля - Введен недопустимый символ! ")
+                            ship_range(remain - ship)
                 else:
                     print("Кораблей данного типа больше нет")
                     print(all_ships)
                     if sum(all_ships.values()) != 0:
-                        ship_range(remain - x)
+                        ship_range(remain - ship)
             return board
 
         ship_range(num_ships)
-
-
-    def draw_ship(self, board, ship_x, ship_y):
-        # ship_x = range_int(1, 20, "Введите Х корабля: ")
-        # ship_y = range_int(1, 20, "Введите Y корабля: ")
-        if board[ship_y][ship_x] == "O":
-        # if board[ship_y][ship_x] == "O" and \
-        #                 board[ship_y-1][ship_x] == "O" and board[ship_y+1][ship_x] == "O" and \
-        #                 board[ship_y][ship_x-1] == "O" and board[ship_y][ship_x+1] == "O":
-            board[ship_y][ship_x] = u'\u2588'  # Знак █ █ █ Unicode
-        return board
 
 
 class LoseOrWin(Board):
@@ -119,11 +188,14 @@ class LoseOrWin(Board):
     def score(self, show_my_board, show_comp_board, hide_comp_board):
         win = 0
 
-        coordinates = input("Введите координаты (Например B-4): ").split('-')
+        coordinates = input("Введите координаты (Например B-4): ")
         guess_alpha = coordinates[0]
         guess_col = search_char(guess_alpha)
-        guess_row = int(coordinates[1])
-        #os.system('cls')
+        if len(coordinates) == 2:
+            guess_row = int(coordinates[1])
+        elif len(coordinates) == 3:
+            guess_row = int(coordinates[1] + coordinates[2])
+        os.system('cls')
 
 
         if hide_comp_board[guess_row][guess_col] == u'\u2588': # Знак █ █ █ Unicode
@@ -154,6 +226,7 @@ if __name__ == '__main__':
     import openpyxl
     import os
 
+    os.system('cls')
     x = 10 # range_int(5, 20, "Введите ширину доски: ", "Допустимая ширина доски 5 - 20")
     y = 10 # range_int(5, 20, "Введите высоту доски: ", "Допустимая высота доски 5 - 20")
 
@@ -165,15 +238,6 @@ if __name__ == '__main__':
     ship = MyShips(x, y)
     board_player_one = ship.choose_ship(test_board)
 
-    # excel = openpyxl.load_workbook('./data/start.xlsx')
-    # sheet = excel['Лист1']
-    #
-    # for row in openpyxl.compat.range(1, 11):
-    #     for col in openpyxl.compat.range(1, 11):
-    #         sheet.cell(column=col+1, row=row+2, value=test_board[row][col])
-    #
-    # excel.save('./data/' + full_data() + '.xlsx')
-
     print("{:*^110}".format(" Игровая доска "))
     player_two_board = Board(x, y)
     test_board = player_two_board.generateBoard()
@@ -182,10 +246,8 @@ if __name__ == '__main__':
     ship = MyShips(x, y)
     board_player_two = ship.choose_ship(test_board)
 
-
     attack_board_player_1 = player_one_board.generateBoard()
     attack_board_player_2 = player_two_board.generateBoard()
-
 
     player_1 = LoseOrWin(x, y)
     player_2 = LoseOrWin(x, y)
@@ -206,4 +268,3 @@ if __name__ == '__main__':
             if game_score == 10:
                 print("Игрок 2 победил!")
                 break
-
