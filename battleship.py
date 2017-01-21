@@ -265,3 +265,4 @@ if __name__ == '__main__':
             if game_score == 10:
                 print("Игрок 2 победил!")
                 break
+
