@@ -7,10 +7,10 @@ def range_int(low_value, higt_value, input_text, message = "Число вне д
             return variable
         else:
             print(message)
-            range_int(low_value, higt_value, input_text, message="Число вне диапазона")
-    except:
+            return range_int(low_value, higt_value, input_text, message="Число вне диапазона")
+    except ValueError:
         print("Вы ввели не число!")
-        range_int(low_value, higt_value, input_text, message="Число вне диапазона")
+        return range_int(low_value, higt_value, input_text, message="Число вне диапазона")
 
 
 def search_char(letter):
@@ -51,18 +51,19 @@ class Board(object):
 
 class MyShips(Board):
 
-    def choose_ship(self, board, all_ship_coords=[]):
+    def choose_ship(self, player_name, board, all_ship_coords=[]):
+        self.player_name = player_name
         self.board = board
         self.all_ship_coords = all_ship_coords
         all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
         num_ships = 10
 
+
         def ship_range(remain):
             for ship in range(remain):
-                type_ship = range_int(1, 4, "Количество палуб коробля (1-4) ")
+                type_ship = range_int(1, 4, str(player_name) + ": Количество палуб коробля (1-4) ")
                 if all_ships[type_ship] > 0:
-
-                    coordinates = input("Введите координаты (Например B4): ")
+                    coordinates = input(str(player_name) + ": Введите координаты (Например B4): ")
                     ship_x = search_char(coordinates[0])
                     if len(coordinates) == 2:
                         ship_y = int(coordinates[1])
@@ -82,7 +83,7 @@ class MyShips(Board):
                                         [coords[0] - 1, coords[1] - 1] in all_ship_coords or \
                                 [coords[0], coords[1] + 1] in all_ship_coords or \
                                         [coords[0], coords[1] - 1] in all_ship_coords:
-                            print("Слишком близко к соседнему кораблю")
+                            print(str(player_name) + ": Слишком близко к соседнему кораблю")
                             print(all_ships)
                             if sum(all_ships.values()) != 0:
                                 ship_range(remain - ship)
@@ -95,7 +96,7 @@ class MyShips(Board):
                             print(all_ships)
                             print(all_ship_coords)
                     else:
-                        ship_position = range_int(1, 2, "Размещение корабля(1-горизонтально, 2-вертикально): ")
+                        ship_position = range_int(1, 2, str(player_name) + ": Размещение корабля(1-горизонтально, 2-вертикально): ")
 
                         if ship_position == 1:
                             test_result = 0
@@ -113,7 +114,7 @@ class MyShips(Board):
                                                 [coords[0] - 1, coords[1] - 1] in all_ship_coords or \
                                                 [coords[0], coords[1] + 1] in all_ship_coords or \
                                                 [coords[0], coords[1] - 1] in all_ship_coords or ship_x + type_ship > 11:
-                                    print("Близко к соседнему кораблю либо за пределами доски")
+                                    print(str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
                                     print(all_ships)
                                     if sum(all_ships.values()) != 0:
                                         ship_range(remain - ship)
@@ -149,7 +150,7 @@ class MyShips(Board):
                                                 [coords[0] - 1, coords[1] - 1] in all_ship_coords or \
                                         [coords[0], ship_y + type_ship] in all_ship_coords or \
                                                 [coords[0], ship_y - 1] in all_ship_coords or ship_y + type_ship > 11:
-                                    print("Близко к соседнему кораблю либо за пределами доски")
+                                    print(str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
                                     print(all_ships)
                                     if sum(all_ships.values()) != 0:
                                         ship_range(remain - ship)
@@ -169,10 +170,10 @@ class MyShips(Board):
                                 print(all_ships)
                                 print(all_ship_coords)
                         else:
-                            print("Размещение корабля - Введен недопустимый символ! ")
+                            print(str(player_name) + ": Размещение корабля - Введен недопустимый символ! ")
                             ship_range(remain - ship)
                 else:
-                    print("Кораблей данного типа больше нет")
+                    print(str(player_name) + ": Кораблей данного типа больше нет")
                     print(all_ships)
                     if sum(all_ships.values()) != 0:
                         ship_range(remain - ship)
@@ -229,21 +230,18 @@ if __name__ == '__main__':
     x = 10 # range_int(5, 20, "Введите ширину доски: ", "Допустимая ширина доски 5 - 20")
     y = 10 # range_int(5, 20, "Введите высоту доски: ", "Допустимая высота доски 5 - 20")
 
-    print ("{:*^110}".format(" Игровая доска "))
     player_one_board = Board(x, y)
     test_board = player_one_board.generateBoard()
-    for row in test_board:
-        print("{:^110}".format(" ".join(row)))
+    print_test_board = player_one_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
     ship = MyShips(x, y)
-    board_player_one = ship.choose_ship(test_board)
+    board_player_one = ship.choose_ship("Игрок №1", test_board)
 
     print("{:*^110}".format(" Игровая доска "))
     player_two_board = Board(x, y)
     test_board = player_two_board.generateBoard()
-    for row in test_board:
-        print("{:^110}".format(" ".join(row)))
+    print_test_board = player_two_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
     ship = MyShips(x, y)
-    board_player_two = ship.choose_ship(test_board)
+    board_player_two = ship.choose_ship("Игрок №2", test_board)
 
     attack_board_player_1 = player_one_board.generateBoard()
     attack_board_player_2 = player_two_board.generateBoard()
