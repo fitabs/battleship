@@ -65,12 +65,20 @@ class MyShips(Board):
             for ship in range(remain):
                 type_ship = range_int(1, 4, str(player_name) + ": Количество палуб коробля (1-4) ")
                 if all_ships[type_ship] > 0:
-                    coordinates = input(str(player_name) + ": Введите координаты (Например B4): ")
+                    coordinates = "1a1"
+                    while not coordinates[0].isalpha() or \
+                            not coordinates[1].isdigit() or coordinates[1] == "0" or \
+                            not coordinates[2].isdigit() or coordinates[2] != "0":
+                        coordinates = input(str(player_name) + ": Введите координаты (Например B4): ")
+                        coordinates += "023"
+
                     ship_x = search_char(coordinates[0])
-                    if len(coordinates) == 2:
+                    if len(coordinates) == 5:
                         ship_y = int(coordinates[1])
-                    elif len(coordinates) == 3:
+                    elif len(coordinates) == 6:
                         ship_y = int(coordinates[1] + coordinates[2])
+                    else:
+                        print("Ошибка с координатами")
 
                     if type_ship == 1:
                         coords = []
@@ -187,12 +195,18 @@ class LoseOrWin(Board):
     def score(self, show_my_board, show_comp_board, hide_comp_board):
         win = 0
 
-        coordinates = input("Введите координаты (Например B4): ")
+        coordinates = "1a1"
+        while not coordinates[0].isalpha() or \
+                not coordinates[1].isdigit() or coordinates[1] == "0" or \
+                not coordinates[2].isdigit() or coordinates[2] != "0":
+            coordinates = input("Введите координаты (Например B4): ")
+            coordinates += "023"
+
         guess_alpha = coordinates[0]
         guess_col = search_char(guess_alpha)
-        if len(coordinates) == 2:
+        if len(coordinates) == 5:
             guess_row = int(coordinates[1])
-        elif len(coordinates) == 3:
+        elif len(coordinates) == 6:
             guess_row = int(coordinates[1] + coordinates[2])
         os.system('cls')
 
@@ -257,13 +271,13 @@ if __name__ == '__main__':
         if batch % 2 == 0:
             print("\nХод игрока №1")
             game_score, board_player_two = player_1.score(board_player_one, attack_board_player_1, board_player_two)
-            if game_score == 10:
+            if game_score == 7:
                 print("Игрок 1 победил!")
                 break
         else:
             print("\nХод игрока №2")
             game_score, board_player_one = player_2.score(board_player_two, attack_board_player_2, board_player_one)
-            if game_score == 10:
+            if game_score == 7:
                 print("Игрок 2 победил!")
                 break
 
