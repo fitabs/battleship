@@ -323,130 +323,43 @@ class LoseOrWin(Board):
 
                         if ship_point_counter == ship_type:
                             if ship[ship_type-1][0] - ship[0][0] == 0:  # Значит координаты не меняются по иксу
-                                try:
-                                    show_comp_board[ship[0][0]][ship[ship_type-1][1] + 1] = "*"
-                                    show_comp_board[ship[0][0]][ship[0][1] - 1] = "*"
-                                    hide_comp_board[ship[0][0]][ship[ship_type-1][1] + 1] = "*"
-                                    hide_comp_board[ship[0][0]][ship[0][1] - 1] = "*"
-                                except:
-                                    try:
-                                        show_comp_board[ship[0][0]][ship[ship_type-1][1] + 1] = "*"
-                                        hide_comp_board[ship[0][0]][ship[ship_type-1][1] + 1] = "*"
-                                    except:
-                                        show_comp_board[ship[0][0]][ship[0][1] - 1] = "*"
-                                        hide_comp_board[ship[0][0]][ship[0][1] - 1] = "*"
+                                if ship[ship_type-1][1] + 1 <= 10 and ship[0][1] - 1 > 0:
+                                    show_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
+                                    show_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
+                                    hide_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
+                                    hide_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
+                                elif ship[0][1] - 1 == 0:
+                                    show_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
+                                    hide_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
+                                elif ship[ship_type-1][1] + 1 == 11:
+                                    show_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
+                                    hide_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
                             else:
-                                try:
+                                if ship[ship_type - 1][0] + 1 <= 10 and ship[0][0] - 1 > 0:
                                     show_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
                                     show_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
                                     hide_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
                                     hide_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
-                                except:
-                                    try:
+                                elif ship[0][0] - 1 == 0:
                                         show_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
                                         hide_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
-                                    except:
+                                elif ship[ship_type - 1][0] + 1 == 11:
                                         show_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
                                         hide_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
-
                 counter += 1
-
-
-
-
-
-
-
-
-
-            #
-            # if hide_comp_board[guess_row + 1][guess_col] == u'\u2591' and hide_comp_board[guess_row + 2][guess_col] == u'\u2591' and \
-            #                 hide_comp_board[guess_row + 3][guess_col] == u'\u2591':
-            #     show_comp_board[guess_row - 1][guess_col] = "*"
-            #     show_comp_board[guess_row + 4][guess_col] = "*"
-            #     hide_comp_board[guess_row - 1][guess_col] = "*"
-            #     hide_comp_board[guess_row + 4][guess_col] = "*"
-            #
-            # elif hide_comp_board[guess_row - 1][guess_col] == u'\u2591' and hide_comp_board[guess_row - 2][guess_col] == u'\u2591' and \
-            #                 hide_comp_board[guess_row - 3][guess_col] == u'\u2591':
-            #     show_comp_board[guess_row + 1][guess_col] = "*"
-            #     show_comp_board[guess_row - 4][guess_col] = "*"
-            #     hide_comp_board[guess_row + 1][guess_col] = "*"
-            #     hide_comp_board[guess_row - 4][guess_col] = "*"
-            #
-            # elif hide_comp_board[guess_row][guess_col + 1] == u'\u2591' and hide_comp_board[guess_row][guess_col + 2] == u'\u2591' and \
-            #                 hide_comp_board[guess_row][guess_col + 3] == u'\u2591':
-            #     show_comp_board[guess_row][guess_col - 1] = "*"
-            #     show_comp_board[guess_row][guess_col + 4] = "*"
-            #     hide_comp_board[guess_row][guess_col - 1] = "*"
-            #     hide_comp_board[guess_row][guess_col + 4] = "*"
-            #
-            # elif hide_comp_board[guess_row][guess_col - 1] == u'\u2591' and hide_comp_board[guess_row][guess_col - 2] == u'\u2591' and \
-            #                 hide_comp_board[guess_row][guess_col - 3] == u'\u2591':
-            #     show_comp_board[guess_row][guess_col + 1] = "*"
-            #     show_comp_board[guess_row][guess_col - 4] = "*"
-            #     hide_comp_board[guess_row][guess_col + 1] = "*"
-            #     hide_comp_board[guess_row][guess_col - 4] = "*"
-            #
-            # elif hide_comp_board[guess_row - 1][guess_col] == u'\u2591' and hide_comp_board[guess_row + 1][guess_col] == u'\u2591' and \
-            #                 hide_comp_board[guess_row + 2][guess_col] == u'\u2591':
-            #     show_comp_board[guess_row - 2][guess_col] = "*"
-            #     show_comp_board[guess_row + 3][guess_col] = "*"
-            #     hide_comp_board[guess_row - 2][guess_col] = "*"
-            #     hide_comp_board[guess_row + 3][guess_col] = "*"
-            #
-            # elif hide_comp_board[guess_row + 1][guess_col] == u'\u2591' and hide_comp_board[guess_row - 1][guess_col] == u'\u2591' and \
-            #                 hide_comp_board[guess_row - 2][guess_col] == u'\u2591':
-            #     show_comp_board[guess_row + 2][guess_col] = "*"
-            #     show_comp_board[guess_row - 3][guess_col] = "*"
-            #     hide_comp_board[guess_row + 2][guess_col] = "*"
-            #     hide_comp_board[guess_row - 3][guess_col] = "*"
-            #
-            # elif hide_comp_board[guess_row][guess_col - 1] == u'\u2591' and hide_comp_board[guess_row][guess_col + 1] == u'\u2591' and \
-            #                 hide_comp_board[guess_row][guess_col + 2] == u'\u2591':
-            #     show_comp_board[guess_row][guess_col - 2] = "*"
-            #     show_comp_board[guess_row][guess_col + 3] = "*"
-            #     hide_comp_board[guess_row][guess_col - 2] = "*"
-            #     hide_comp_board[guess_row][guess_col + 3] = "*"
-            #
-            # elif hide_comp_board[guess_row][guess_col + 1] == u'\u2591' and hide_comp_board[guess_row][guess_col - 1] == u'\u2591' and \
-            #                 hide_comp_board[guess_row][guess_col - 2] == u'\u2591':
-            #     show_comp_board[guess_row][guess_col + 2] = "*"
-            #     show_comp_board[guess_row][guess_col - 3] = "*"
-            #     hide_comp_board[guess_row][guess_col + 2] = "*"
-            #     hide_comp_board[guess_row][guess_col - 3] = "*"
-            #
-            # elif hide_comp_board[guess_row + 1][guess_col] == u'\u2591' and hide_comp_board[guess_row - 1][guess_col] == u'\u2591':
-            #     show_comp_board[guess_row - 2][guess_col] = "*"
-            #     show_comp_board[guess_row + 2][guess_col] = "*"
-            #     hide_comp_board[guess_row - 2][guess_col] = "*"
-            #     hide_comp_board[guess_row + 2][guess_col] = "*"
-            #
-            # elif hide_comp_board[guess_row][guess_col + 1] == u'\u2591' and hide_comp_board[guess_row][guess_col - 1] == u'\u2591':
-            #     show_comp_board[guess_row][guess_col + 2] = "*"
-            #     show_comp_board[guess_row][guess_col - 2] = "*"
-            #     hide_comp_board[guess_row][guess_col + 2] = "*"
-            #     hide_comp_board[guess_row][guess_col - 2] = "*"
-
 
             self.win += 1
         else:
             if (guess_row < 0 or guess_row > len(show_my_board)) or (guess_col < 0 or guess_col > len(show_my_board)):
                 print("\n" + "{:^110}".format(" Oops, введены координаты за пределами доски. ") + "\n")
                 one_more_chance = 1
-            elif show_comp_board[guess_row][guess_col] == u'\u2588' or show_comp_board[guess_row][guess_col] == "*":
+            elif show_comp_board[guess_row][guess_col] == u'\u2591' or show_comp_board[guess_row][guess_col] == "*":
                 print("\n" + "{:^110}".format(" Будь внимательнее! Ты уже стрелял по этой точке. ") + "\n")
                 one_more_chance = 1
             else:
                 print("\n" + "{:^110}".format(" Ты промазал! ") + "\n")
                 show_comp_board[guess_row][guess_col] = "*"
                 hide_comp_board[guess_row][guess_col] = "*"
-
-        """search destroyed board"""
-        if u'\u2591' in hide_comp_board:
-            hide_comp_board.index
-
-
 
         board = self.modificateBoard(show_my_board, show_comp_board)
         self.printBoard(board)
