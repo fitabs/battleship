@@ -20,6 +20,7 @@ def search_char(letter):
             break
     print('Введен не верный символ, необходимо "A-Z"')
 
+
 def corrdinates_on_board(y, x):
     if y[0] > 0 and y[0] < 11 and x[0] > 0 and x[0] < 11:
         return True
@@ -106,7 +107,6 @@ class MyShips(Board):
                             if sum(all_ships.values()) != 0:
                                 ship_range(remain - ship)
                                 break
-
 
                     if type_ship == 1:
                         coords = []
@@ -248,7 +248,6 @@ class LoseOrWin(Board):
             guess_row = int(coordinates[1] + coordinates[2])
         os.system('cls')
 
-
         if hide_comp_board[guess_row][guess_col] == u'\u2588': # Знак █ █ █ Unicode
             print("\n" + "{:^110}".format(" Ты попал! ") + "\n")
             one_more_chance = 1
@@ -282,7 +281,6 @@ class LoseOrWin(Board):
                         if corrdinates_on_board([guess_row + 1], [guess_col]): hide_comp_board[guess_row + 1][guess_col] = "*"
                         if corrdinates_on_board([guess_row], [guess_col - 1]): hide_comp_board[guess_row][guess_col - 1] = "*"
                         if corrdinates_on_board([guess_row], [guess_col + 1]): hide_comp_board[guess_row][guess_col + 1] = "*"
-
                     else:
                         ship_point_counter = 0
                         for point in range(ship_type):
@@ -291,29 +289,16 @@ class LoseOrWin(Board):
 
                         if ship_point_counter == ship_type:
                             if ship[ship_type-1][0] - ship[0][0] == 0:  # Значит координаты не меняются по иксу
-                                if ship[ship_type-1][1] + 1 <= 10 and ship[0][1] - 1 > 0:
-                                    show_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
-                                    show_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
-                                    hide_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
-                                    hide_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
-                                elif ship[0][1] - 1 == 0:
-                                    show_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
-                                    hide_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
-                                elif ship[ship_type-1][1] + 1 == 11:
-                                    show_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
-                                    hide_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
+                                if corrdinates_on_board([ship[ship_type-1][1] + 1], [ship[0][0]]): show_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
+                                if corrdinates_on_board([ship[0][1] - 1], [ship[0][0]]): show_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
+                                if corrdinates_on_board([ship[ship_type-1][1] + 1], [ship[0][0]]): hide_comp_board[ship[ship_type-1][1] + 1][ship[0][0]] = "*"
+                                if corrdinates_on_board([ship[0][1] - 1], [ship[0][0]]): hide_comp_board[ship[0][1] - 1][ship[0][0]] = "*"
                             else:
-                                if ship[ship_type - 1][0] + 1 <= 10 and ship[0][0] - 1 > 0:
-                                    show_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
-                                    show_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
-                                    hide_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
-                                    hide_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
-                                elif ship[0][0] - 1 == 0:
-                                        show_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
-                                        hide_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
-                                elif ship[ship_type - 1][0] + 1 == 11:
-                                        show_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
-                                        hide_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
+                                if corrdinates_on_board([ship[0][1]], [ship[ship_type-1][0] + 1]): show_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
+                                if corrdinates_on_board([ship[0][1]], [ship[0][0] - 1]): show_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
+                                if corrdinates_on_board([ship[0][1]], [ship[ship_type-1][0] + 1]): hide_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
+                                if corrdinates_on_board([ship[0][1]], [ship[0][0] - 1]): hide_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
+
                 counter += 1
             self.win += 1
         else:
@@ -330,8 +315,7 @@ class LoseOrWin(Board):
 
         board = self.modificateBoard(show_my_board, show_comp_board)
         self.printBoard(board)
-        if one_more_chance == 0:
-            input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+        input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
         os.system('cls')
 
         return self.win, hide_comp_board, one_more_chance
