@@ -20,6 +20,12 @@ def search_char(letter):
             break
     print('Введен не верный символ, необходимо "A-Z"')
 
+def corrdinates_on_board(y, x):
+    if y[0] > 0 and y[0] < 11 and x[0] > 0 and x[0] < 11:
+        return True
+    else:
+        return False
+
 
 class Board(object):
     """docstring for Board"""
@@ -34,7 +40,7 @@ class Board(object):
         board.append(["XX"] + [alphabet[:self.x * 2 - 1]])
         for line in range(self.y):
             count_line += 1
-            board.append([str("{:02d}".format(count_line))] + ["O"] * self.x)
+            board.append([str("{:02d}".format(count_line))] + [u'\u00B7'] * self.x)
         return(board)
 
     def modificateBoard(self, board_1, board_2):
@@ -61,7 +67,6 @@ class MyShips(Board):
         num_ships = 10
 
         def ship_range(remain):
-            print(sum(all_ships.values()))
             if sum(all_ships.values()) > 0:
                 for ship in range(remain):
                     if random_status == 2:
@@ -100,7 +105,7 @@ class MyShips(Board):
                             print(all_ships)
                             if sum(all_ships.values()) != 0:
                                 ship_range(remain - ship)
-
+                                break
 
 
                     if type_ship == 1:
@@ -117,9 +122,11 @@ class MyShips(Board):
                                             [coords[0] - 1, coords[1] - 1] in self.all_ship_coords[counter] or \
                                             [coords[0], coords[1] + 1] in self.all_ship_coords[counter] or \
                                             [coords[0], coords[1] - 1] in self.all_ship_coords[counter]:
-                                print("\n" + str(player_name) + ": Слишком близко к соседнему кораблю")
-                                print(all_ships)
+                                if random_status == 1:
+                                    print("\n" + str(player_name) + ": Слишком близко к соседнему кораблю")
+                                    print(all_ships)
                                 ship_range(remain - ship)
+                                break
                         else:
                             all_ships[type_ship] -= 1
                             self.all_ship_coords[sum(all_ships.values())].append(coords)
@@ -151,9 +158,11 @@ class MyShips(Board):
                                                     [coords[0] - 1, coords[1] - 1] in self.all_ship_coords[counter] or \
                                                     [coords[0], coords[1] + 1] in self.all_ship_coords[counter] or \
                                                     [coords[0], coords[1] - 1] in self.all_ship_coords[counter] or ship_x + type_ship > 11:
-                                        print("\n" + str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
-                                        print(all_ships)
+                                        if random_status == 1:
+                                            print("\n" + str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
+                                            print(all_ships)
                                         ship_range(remain - ship)
+                                        break
                                 else:
                                     test_result += 1
                             """ Если проверка пройдена - печатаем все палубы на доске """
@@ -187,9 +196,11 @@ class MyShips(Board):
                                                     [coords[0] - 1, coords[1] - 1] in self.all_ship_coords[counter] or \
                                                     [coords[0], coords[1] + 1] in self.all_ship_coords[counter] or \
                                                     [coords[0], coords[1] - 1] in self.all_ship_coords[counter] or ship_y + type_ship > 11:
-                                        print("\n" + str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
-                                        print(all_ships)
+                                        if random_status == 1:
+                                            print("\n" + str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
+                                            print(all_ships)
                                         ship_range(remain - ship)
+                                        break
                                 else:
                                     test_result += 1
                             """ Если проверка пройдена - печатаем все палубы на доске """
@@ -242,84 +253,20 @@ class LoseOrWin(Board):
             print("\n" + "{:^110}".format(" Ты попал! ") + "\n")
             one_more_chance = 1
 
-            if guess_row == 10 and guess_col == 10:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row - 1][guess_col - 1] = "*"
+            """ Если попал - диагональ **** """
+            show_comp_board[guess_row][guess_col] = u'\u2591' # Знак ... █... Unicode
+            if corrdinates_on_board([guess_row + 1], [guess_col + 1]): show_comp_board[guess_row + 1][guess_col + 1] = "*"
+            if corrdinates_on_board([guess_row - 1], [guess_col + 1]): show_comp_board[guess_row - 1][guess_col + 1] = "*"
+            if corrdinates_on_board([guess_row + 1], [guess_col - 1]): show_comp_board[guess_row + 1][guess_col - 1] = "*"
+            if corrdinates_on_board([guess_row - 1], [guess_col - 1]): show_comp_board[guess_row - 1][guess_col - 1] = "*"
 
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row - 1][guess_col - 1] = "*"
+            hide_comp_board[guess_row][guess_col] = u'\u2591' # Знак ... █... Unicode
+            if corrdinates_on_board([guess_row + 1], [guess_col + 1]): hide_comp_board[guess_row + 1][guess_col + 1] = "*"
+            if corrdinates_on_board([guess_row - 1], [guess_col + 1]): hide_comp_board[guess_row - 1][guess_col + 1] = "*"
+            if corrdinates_on_board([guess_row + 1], [guess_col - 1]): hide_comp_board[guess_row + 1][guess_col - 1] = "*"
+            if corrdinates_on_board([guess_row - 1], [guess_col - 1]): hide_comp_board[guess_row - 1][guess_col - 1] = "*"
 
-            elif guess_row == 10 and guess_col > 1:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row - 1][guess_col + 1] = "*"
-                show_comp_board[guess_row - 1][guess_col - 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row - 1][guess_col + 1] = "*"
-                hide_comp_board[guess_row - 1][guess_col - 1] = "*"
-
-            elif guess_row == 10 and guess_col == 1:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row - 1][guess_col + 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row - 1][guess_col + 1] = "*"
-
-            elif guess_row > 1 and guess_col == 10:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row - 1][guess_col - 1] = "*"
-                show_comp_board[guess_row + 1][guess_col - 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row - 1][guess_col - 1] = "*"
-                hide_comp_board[guess_row + 1][guess_col - 1] = "*"
-
-            elif guess_row == 1 and guess_col == 10:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row + 1][guess_col - 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row + 1][guess_col - 1] = "*"
-
-            elif guess_row == 1 and guess_col == 1:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row + 1][guess_col + 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row + 1][guess_col + 1] = "*"
-
-            elif guess_row == 1 and guess_col > 1:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row + 1][guess_col + 1] = "*"
-                show_comp_board[guess_row + 1][guess_col - 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row + 1][guess_col + 1] = "*"
-                hide_comp_board[guess_row + 1][guess_col - 1] = "*"
-
-            elif guess_row > 1 and guess_col == 1:
-                show_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                show_comp_board[guess_row - 1][guess_col + 1] = "*"
-                show_comp_board[guess_row + 1][guess_col + 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591'  # Знак ... █... Unicode
-                hide_comp_board[guess_row - 1][guess_col + 1] = "*"
-                hide_comp_board[guess_row + 1][guess_col + 1] = "*"
-
-            else:
-                show_comp_board[guess_row][guess_col] = u'\u2591' # Знак ... █... Unicode
-                show_comp_board[guess_row + 1][guess_col + 1] = "*"
-                show_comp_board[guess_row - 1][guess_col + 1] = "*"
-                show_comp_board[guess_row + 1][guess_col - 1] = "*"
-                show_comp_board[guess_row - 1][guess_col - 1] = "*"
-
-                hide_comp_board[guess_row][guess_col] = u'\u2591' # Знак ... █... Unicode
-                hide_comp_board[guess_row + 1][guess_col + 1] = "*"
-                hide_comp_board[guess_row - 1][guess_col + 1] = "*"
-                hide_comp_board[guess_row + 1][guess_col - 1] = "*"
-                hide_comp_board[guess_row - 1][guess_col - 1] = "*"
-
-            """ Проверка уничтожен ли корабль """
+            """ Проверка уничтожен ли корабль - спереди/сзади **** """
             for ship in ship_coords:
                 counter = 0
                 if [guess_col, guess_row] in ship:
@@ -327,14 +274,14 @@ class LoseOrWin(Board):
                     self.strike_ship[counter].append([guess_col, guess_row])
 
                     if ship_type == 1:
-                        show_comp_board[guess_row - 1][guess_col] = "*"
-                        show_comp_board[guess_row + 1][guess_col] = "*"
-                        show_comp_board[guess_row][guess_col - 1] = "*"
-                        show_comp_board[guess_row][guess_col + 1] = "*"
-                        hide_comp_board[guess_row - 1][guess_col] = "*"
-                        hide_comp_board[guess_row + 1][guess_col] = "*"
-                        hide_comp_board[guess_row][guess_col - 1] = "*"
-                        hide_comp_board[guess_row][guess_col + 1] = "*"
+                        if corrdinates_on_board([guess_row - 1], [guess_col]): show_comp_board[guess_row - 1][guess_col] = "*"
+                        if corrdinates_on_board([guess_row + 1], [guess_col]): show_comp_board[guess_row + 1][guess_col] = "*"
+                        if corrdinates_on_board([guess_row], [guess_col - 1]): show_comp_board[guess_row][guess_col - 1] = "*"
+                        if corrdinates_on_board([guess_row], [guess_col + 1]): show_comp_board[guess_row][guess_col + 1] = "*"
+                        if corrdinates_on_board([guess_row - 1], [guess_col]): hide_comp_board[guess_row - 1][guess_col] = "*"
+                        if corrdinates_on_board([guess_row + 1], [guess_col]): hide_comp_board[guess_row + 1][guess_col] = "*"
+                        if corrdinates_on_board([guess_row], [guess_col - 1]): hide_comp_board[guess_row][guess_col - 1] = "*"
+                        if corrdinates_on_board([guess_row], [guess_col + 1]): hide_comp_board[guess_row][guess_col + 1] = "*"
 
                     else:
                         ship_point_counter = 0
@@ -383,8 +330,8 @@ class LoseOrWin(Board):
 
         board = self.modificateBoard(show_my_board, show_comp_board)
         self.printBoard(board)
-
-        input("\n" + "Любая кнопка чтобы продолжить: ")
+        if one_more_chance == 0:
+            input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
         os.system('cls')
 
         return self.win, hide_comp_board, one_more_chance
@@ -409,7 +356,7 @@ if __name__ == '__main__':
     random_status_1 = range_int(1, 2,"Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
     board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
 
-    input("\n" + "Любая кнопка чтобы продолжить: ")
+    input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
     os.system('cls')
 
     player_two_board = Board(x, y)
@@ -428,32 +375,32 @@ if __name__ == '__main__':
     player_2 = LoseOrWin(x, y)
     player_2.win_score()
 
-    input("\n" + "Любая кнопка чтобы продолжить: ")
+    input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
     os.system('cls')
 
     turn = x * y
     batch = 0
-    one_more_chance_1 = 1
-    one_more_chance_2 = 1
     for batch in range(turn):
 
         if batch % 2 == 0:
+            one_more_chance_1 = 1
             while one_more_chance_1 == 1:
                 print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
                 game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one, attack_board_player_1, board_player_two, coords_2)
                 print("Игрок №1 " + str(game_score_1))
-                if game_score_1 == 25:
+                if game_score_1 == 20:
                     break
-            if game_score_1 == 25:
+            if game_score_1 == 20:
                 print("Игрок 1 победил!")
                 break
         else:
+            one_more_chance_2 = 1
             while one_more_chance_2 == 1:
                 print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
                 game_score_2, board_player_one, one_more_chance_2 = player_2.score(board_player_two, attack_board_player_2, board_player_one, coords_1)
                 print("Игрок №2 " + str(game_score_2))
-                if game_score_2 == 25:
+                if game_score_2 == 20:
                     break
-            if game_score_2 == 25:
+            if game_score_2 == 20:
                 print("Игрок 2 победил!")
                 break
