@@ -54,23 +54,37 @@ class MyShips(Board):
     def set_all_ships_cords(self):
         self.all_ship_coords = [[], [], [], [], [], [], [], [], [], []]
 
-    def choose_ship(self, player_name, board):
+    def choose_ship(self, player_name, board, random_status):
         self.player_name = player_name
         self.board = board
-        all_ships = {1:0, 2:0, 3:1, 4:1}  # 1:4 == 1 палубный корабль 4 штук
-        num_ships = 2
+        all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
+        num_ships = 10
 
 
         def ship_range(remain):
             for ship in range(remain):
-                type_ship = range_int(1, 4, "\n" + str(player_name) + ": Количество палуб коробля (1-4) ")
-                if all_ships[type_ship] > 0:
-                    coordinates = "1a1"
-                    while not coordinates[0].isalpha() or not coordinates[0] in ascii_letters or \
-                            not coordinates[1].isdigit() or coordinates[1] == "0" or \
-                            not coordinates[2].isdigit() or coordinates[2] != "0":
-                        coordinates = input(str(player_name) + ": Введите координаты (Например B4): ")
-                        coordinates += "023"
+                if random_status == 2:
+                    type_ship = randint(1, 4)
+                    while all_ships[type_ship] == 0:
+                        type_ship = randint(1, 4)
+                    ship_x = randint(1, 10)
+                    ship_y = randint(1, 10)
+
+
+                elif random_status == 1:
+                    type_ship = range_int(1, 4, "\n" + str(player_name) + ": Количество палуб коробля (1-4) ")
+                    if all_ships[type_ship] > 0:
+                        coordinates = "1a1"
+                        while not coordinates[0].isalpha() or not coordinates[0] in ascii_letters or \
+                                not coordinates[1].isdigit() or coordinates[1] == "0" or \
+                                not coordinates[2].isdigit() or coordinates[2] != "0":
+                            coordinates = input(str(player_name) + ": Введите координаты (Например B4): ")
+                            coordinates += "023"
+                    else:
+                        print("\n" + str(player_name) + ": Кораблей данного типа больше нет")
+                        print(all_ships)
+                        if sum(all_ships.values()) != 0:
+                            ship_range(remain - ship)
 
                     ship_x = search_char(coordinates[0])
                     if len(coordinates) == 5:
@@ -80,110 +94,112 @@ class MyShips(Board):
                     else:
                         print("Ошибка с координатами")
 
-                    if type_ship == 1:
-                        coords = []
-                        coords.append(ship_x)
-                        coords.append(ship_y)
-                        if coords in self.all_ship_coords or \
-                                        [coords[0] + 1, coords[1]] in self.all_ship_coords or \
-                                        [coords[0] - 1, coords[1]] in self.all_ship_coords or \
-                                        [coords[0] + 1, coords[1] + 1] in self.all_ship_coords or \
-                                        [coords[0] + 1, coords[1] - 1] in self.all_ship_coords or \
-                                        [coords[0] - 1, coords[1] + 1] in self.all_ship_coords or \
-                                        [coords[0] - 1, coords[1] - 1] in self.all_ship_coords or \
-                                        [coords[0], coords[1] + 1] in self.all_ship_coords or \
-                                        [coords[0], coords[1] - 1] in self.all_ship_coords:
+                if type_ship == 1:
+                    coords = []
+                    coords.append(ship_x)
+                    coords.append(ship_y)
+                    for counter in range(len(self.all_ship_coords)):
+                        if coords in self.all_ship_coords[counter] or \
+                                        [coords[0] + 1, coords[1]] in self.all_ship_coords[counter] or \
+                                        [coords[0] - 1, coords[1]] in self.all_ship_coords[counter] or \
+                                        [coords[0] + 1, coords[1] + 1] in self.all_ship_coords[counter] or \
+                                        [coords[0] + 1, coords[1] - 1] in self.all_ship_coords[counter] or \
+                                        [coords[0] - 1, coords[1] + 1] in self.all_ship_coords[counter] or \
+                                        [coords[0] - 1, coords[1] - 1] in self.all_ship_coords[counter] or \
+                                        [coords[0], coords[1] + 1] in self.all_ship_coords[counter] or \
+                                        [coords[0], coords[1] - 1] in self.all_ship_coords[counter]:
                             print("\n" + str(player_name) + ": Слишком близко к соседнему кораблю")
                             print(all_ships)
                             if sum(all_ships.values()) != 0:
                                 ship_range(remain - ship)
-                        else:
-                            all_ships[type_ship] -= 1
-                            self.all_ship_coords[sum(all_ships.values())].append(coords)
-                            board[ship_y][ship_x] = u'\u2588'
-                            os.system('cls')
-                            self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + "  Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
-                            print(all_ships)
-                            print(self.all_ship_coords)
+                    else:
+                        all_ships[type_ship] -= 1
+                        self.all_ship_coords[sum(all_ships.values())].append(coords)
+                        board[ship_y][ship_x] = u'\u2588'
+                        os.system('cls')
+                        self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + "  Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
+                        print(all_ships)
+                        print(self.all_ship_coords)
+                else:
+                    if random_status == 2:
+                        ship_position = randint(1, 2)
                     else:
                         ship_position = range_int(1, 2, str(player_name) + ": Размещение корабля(1-горизонтально, 2-вертикально): ")
 
-                        if ship_position == 1:
-                            test_result = 0
-                            """ Проверка всех палуб корабля """
+                    if ship_position == 1:
+                        test_result = 0
+                        """ Проверка всех палуб корабля """
+                        for x in range(type_ship):
+                            coords = []
+                            coords.append(ship_x + x)
+                            coords.append(ship_y)
+                            for counter in range(len(self.all_ship_coords)):
+                                if coords in self.all_ship_coords[counter] or \
+                                                [ship_x + 1, coords[1]] in self.all_ship_coords[counter] or \
+                                                [ship_x - 1, coords[1]] in self.all_ship_coords[counter] or \
+                                                [coords[0] + 1, coords[1] + 1] in self.all_ship_coords[counter] or \
+                                                [coords[0] + 1, coords[1] - 1] in self.all_ship_coords[counter] or \
+                                                [coords[0] - 1, coords[1] + 1] in self.all_ship_coords[counter] or \
+                                                [coords[0] - 1, coords[1] - 1] in self.all_ship_coords[counter] or \
+                                                [coords[0], coords[1] + 1] in self.all_ship_coords[counter] or \
+                                                [coords[0], coords[1] - 1] in self.all_ship_coords[counter] or ship_x + type_ship > 11:
+                                    print("\n" + str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
+                                    print(all_ships)
+                                    if sum(all_ships.values()) != 0:
+                                        ship_range(remain - ship)
+                            else:
+                                test_result += 1
+                        """ Если проверка пройдена - печатаем все палубы на доске """
+                        if test_result == type_ship:
+                            all_ships[type_ship] -= 1
                             for x in range(type_ship):
                                 coords = []
                                 coords.append(ship_x + x)
                                 coords.append(ship_y)
-                                if coords in self.all_ship_coords or \
-                                                [ship_x + type_ship, coords[1]] in self.all_ship_coords or \
-                                                [ship_x - 1, coords[1]] in self.all_ship_coords or \
-                                                [coords[0] + 1, coords[1] + 1] in self.all_ship_coords or \
-                                                [coords[0] + 1, coords[1] - 1] in self.all_ship_coords or \
-                                                [coords[0] - 1, coords[1] + 1] in self.all_ship_coords or \
-                                                [coords[0] - 1, coords[1] - 1] in self.all_ship_coords or \
-                                                [coords[0], coords[1] + 1] in self.all_ship_coords or \
-                                                [coords[0], coords[1] - 1] in self.all_ship_coords or ship_x + type_ship > 11:
+                                self.all_ship_coords[sum(all_ships.values())].append(coords)
+                                board[ship_y][ship_x + x] = u'\u2588'
+                                os.system('cls')
+                                self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + " Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
+                            print(all_ships)
+                            print(self.all_ship_coords)
+
+                    elif ship_position == 2:
+                        test_result = 0
+                        """ Проверка всех палуб корабля """
+                        for y in range(type_ship):
+                            coords = []
+                            coords.append(ship_x)
+                            coords.append(ship_y + y)
+                            for counter in range(len(self.all_ship_coords)):
+                                if coords in self.all_ship_coords[counter] or \
+                                                [coords[0] + 1, coords[1]] in self.all_ship_coords[counter] or \
+                                                [coords[0] - 1, coords[1]] in self.all_ship_coords[counter] or \
+                                                [coords[0] + 1, coords[1] + 1] in self.all_ship_coords[counter] or \
+                                                [coords[0] + 1, coords[1] - 1] in self.all_ship_coords[counter] or \
+                                                [coords[0] - 1, coords[1] + 1] in self.all_ship_coords[counter] or \
+                                                [coords[0] - 1, coords[1] - 1] in self.all_ship_coords[counter] or \
+                                                [coords[0], ship_y + 1] in self.all_ship_coords[counter] or \
+                                                [coords[0], ship_y - 1] in self.all_ship_coords[counter] or ship_y + type_ship > 11:
                                     print("\n" + str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
                                     print(all_ships)
                                     if sum(all_ships.values()) != 0:
                                         ship_range(remain - ship)
-                                else:
-                                    test_result += 1
-                            """ Если проверка пройдена - печатаем все палубы на доске """
-                            if test_result == type_ship:
-                                all_ships[type_ship] -= 1
-                                for x in range(type_ship):
-                                    coords = []
-                                    coords.append(ship_x + x)
-                                    coords.append(ship_y)
-                                    self.all_ship_coords[sum(all_ships.values())].append(coords)
-                                    board[ship_y][ship_x + x] = u'\u2588'
-                                    os.system('cls')
-                                    self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + " Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
-                                print(all_ships)
-                                print(self.all_ship_coords)
-
-                        elif ship_position == 2:
-                            test_result = 0
-                            """ Проверка всех палуб корабля """
+                            else:
+                                test_result += 1
+                        """ Если проверка пройдена - печатаем все палубы на доске """
+                        if test_result == type_ship:
+                            all_ships[type_ship] -= 1
                             for y in range(type_ship):
                                 coords = []
                                 coords.append(ship_x)
                                 coords.append(ship_y + y)
-                                if coords in self.all_ship_coords or \
-                                                [coords[0] + 1, coords[1]] in self.all_ship_coords or \
-                                                [coords[0] - 1, coords[1]] in self.all_ship_coords or \
-                                                [coords[0] + 1, coords[1] + 1] in self.all_ship_coords or \
-                                                [coords[0] + 1, coords[1] - 1] in self.all_ship_coords or \
-                                                [coords[0] - 1, coords[1] + 1] in self.all_ship_coords or \
-                                                [coords[0] - 1, coords[1] - 1] in self.all_ship_coords or \
-                                                [coords[0], ship_y + type_ship] in self.all_ship_coords or \
-                                                [coords[0], ship_y - 1] in self.all_ship_coords or ship_y + type_ship > 11:
-                                    print("\n" + str(player_name) + ": Близко к соседнему кораблю либо за пределами доски")
-                                    print(all_ships)
-                                    if sum(all_ships.values()) != 0:
-                                        ship_range(remain - ship)
-                                else:
-                                    test_result += 1
-                            """ Если проверка пройдена - печатаем все палубы на доске """
-                            if test_result == type_ship:
-                                all_ships[type_ship] -= 1
-                                for y in range(type_ship):
-                                    coords = []
-                                    coords.append(ship_x)
-                                    coords.append(ship_y + y)
-                                    self.all_ship_coords[sum(all_ships.values())].append(coords)
-                                    board[ship_y + y][ship_x] = u'\u2588'
-                                    os.system('cls')
-                                    self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + " Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
-                                print(all_ships)
-                                print(self.all_ship_coords)
-                else:
-                    print("\n" + str(player_name) + ": Кораблей данного типа больше нет")
-                    print(all_ships)
-                    if sum(all_ships.values()) != 0:
-                        ship_range(remain - ship)
+                                self.all_ship_coords[sum(all_ships.values())].append(coords)
+                                board[ship_y + y][ship_x] = u'\u2588'
+                                os.system('cls')
+                                self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + " Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
+                            print(all_ships)
+                            print(self.all_ship_coords)
+
             return board
 
         board = ship_range(num_ships)
@@ -347,7 +363,6 @@ class LoseOrWin(Board):
                                         show_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
                                         hide_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
                 counter += 1
-
             self.win += 1
         else:
             if (guess_row < 0 or guess_row > len(show_my_board)) or (guess_col < 0 or guess_col > len(show_my_board)):
@@ -363,7 +378,6 @@ class LoseOrWin(Board):
 
         board = self.modificateBoard(show_my_board, show_comp_board)
         self.printBoard(board)
-        print(self.win)
 
         input("\n" + "Любая кнопка чтобы продолжить: ")
         os.system('cls')
@@ -376,20 +390,19 @@ if __name__ == '__main__':
 
     from random import randint
     from string import ascii_letters
-    from datetime import datetime
-    import openpyxl
     import os
 
     os.system('cls')
-    x = 10 # range_int(5, 20, "Введите ширину доски: ", "Допустимая ширина доски 5 - 20")
-    y = 10 # range_int(5, 20, "Введите высоту доски: ", "Допустимая высота доски 5 - 20")
+    x = 10
+    y = 10
 
     player_one_board = Board(x, y)
     test_board = player_one_board.generateBoard()
     print_test_board = player_one_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
     ships_1 = MyShips(x, y)
     ships_1.set_all_ships_cords()
-    board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board)
+    random_status_1 = range_int(1, 2,"Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
+    board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
 
     input("\n" + "Любая кнопка чтобы продолжить: ")
     os.system('cls')
@@ -399,7 +412,8 @@ if __name__ == '__main__':
     print_test_board = player_two_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
     ships_2 = MyShips(x, y)
     ships_2.set_all_ships_cords()
-    board_player_two, coords_2 = ships_2.choose_ship("Игрок №2", test_board)
+    random_status_2 = range_int(1, 2, "Игрок №2: Как разместить корабли (1 - руками, 2 - рандомно): ")
+    board_player_two, coords_2 = ships_2.choose_ship("Игрок №2", test_board, random_status_2)
 
     attack_board_player_1 = player_one_board.generateBoard()
     attack_board_player_2 = player_two_board.generateBoard()
@@ -423,9 +437,9 @@ if __name__ == '__main__':
                 print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
                 game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one, attack_board_player_1, board_player_two, coords_2)
                 print("Игрок №1 " + str(game_score_1))
-                if game_score_1 == 7:
+                if game_score_1 == 25:
                     break
-            if game_score_1 == 7:
+            if game_score_1 == 25:
                 print("Игрок 1 победил!")
                 break
         else:
@@ -433,8 +447,8 @@ if __name__ == '__main__':
                 print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
                 game_score_2, board_player_one, one_more_chance_2 = player_2.score(board_player_two, attack_board_player_2, board_player_one, coords_1)
                 print("Игрок №2 " + str(game_score_2))
-                if game_score_2 == 7:
+                if game_score_2 == 25:
                     break
-            if game_score_2 == 7:
+            if game_score_2 == 25:
                 print("Игрок 2 победил!")
                 break
