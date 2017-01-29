@@ -489,7 +489,7 @@ class LoseOrWin(Board):
                 guess_row = int(coordinates[1])
             elif len(coordinates) == 6:
                 guess_row = int(coordinates[1] + coordinates[2])
-        os.system('cls')
+        # os.system('cls')
 
         if hide_comp_board[guess_row][guess_col] == u'\u2588': # Знак █ █ █ Unicode
             print("\n" + "{:^110}".format(" Ты попал! ") + "\n")
@@ -574,80 +574,7 @@ class LoseOrWin(Board):
 
         return self.win, hide_comp_board, self.one_more_chance
 
-class Game:
-
-    def battleship(self):
-
-        os.system('cls')
-        x = 10
-        y = 10
-
-        player_one_board = Board(x, y)
-        test_board = player_one_board.generateBoard()
-        print_test_board = player_one_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
-        ships_1 = MyShips(x, y)
-        ships_1.set_all_ships_cords()
-        random_status_1 = range_int(1, 2,"Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
-        board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
-
-        input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-        os.system('cls')
-
-        player_two_board = Board(x, y)
-        test_board = player_two_board.generateBoard()
-        print_test_board = player_two_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
-        ships_2 = MyShips(x, y)
-        ships_2.set_all_ships_cords()
-        random_status_2 = range_int(1, 2, "Игрок №2: Как разместить корабли (1 - руками, 2 - рандомно): ")
-        board_player_two, coords_2 = ships_2.choose_ship("Игрок №2", test_board, random_status_2)
-
-        attack_board_player_1 = player_one_board.generateBoard()
-        attack_board_player_2 = player_two_board.generateBoard()
-
-        player_1 = LoseOrWin(x, y)
-        player_1.win_score()
-        player_2 = LoseOrWin(x, y)
-        player_2.win_score()
-
-        input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-        os.system('cls')
-
-        turn = x * y
-        batch = 0
-        random_status_game_1 = range_int(1, 2, "Игрок №1: Как стрелять (1 - руками, 2 - рандомно): ")
-        random_status_game_2 = range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
-
-        for batch in range(turn):
-            one_more_chance_1 = 1
-            one_more_chance_2 = 1
-
-            if batch % 2 == 0:
-
-                while one_more_chance_1 == 1 or one_more_chance_1 == 2:
-                    print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
-                    destroy_ship = 0
-                    game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one, attack_board_player_1, board_player_two, coords_2, random_status_game_1)
-                    print("Игрок №1 " + str(game_score_1))
-                    input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-                    os.system('cls')
-                    if game_score_1 == 20:
-                        break
-                if game_score_1 == 20:
-                    print("Игрок 1 победил!")
-                    break
-            else:
-
-                while one_more_chance_2 == 1 or one_more_chance_2 == 2:
-                    print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
-                    game_score_2, board_player_one, one_more_chance_2 = player_2.score(board_player_two, attack_board_player_2, board_player_one, coords_1, random_status_game_2)
-                    print("Игрок №2 " + str(game_score_2))
-                    input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-                    os.system('cls')
-                    if game_score_2 == 20:
-                        break
-                if game_score_2 == 20:
-                    print("Игрок 2 победил!")
-                    break
+###################################################################################################################
 
 if __name__ == '__main__':
 
@@ -655,5 +582,73 @@ if __name__ == '__main__':
     from string import ascii_letters
     import os
 
-    game = Game()
-    game.battleship()
+    os.system('cls')
+    x = 10
+    y = 10
+
+    player_one_board = Board(x, y)
+    test_board = player_one_board.generateBoard()
+    print_test_board = player_one_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
+    ships_1 = MyShips(x, y)
+    ships_1.set_all_ships_cords()
+    random_status_1 = range_int(1, 2,"Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
+    board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
+
+    input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+    os.system('cls')
+
+    player_two_board = Board(x, y)
+    test_board = player_two_board.generateBoard()
+    print_test_board = player_two_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
+    ships_2 = MyShips(x, y)
+    ships_2.set_all_ships_cords()
+    random_status_2 = range_int(1, 2, "Игрок №2: Как разместить корабли (1 - руками, 2 - рандомно): ")
+    board_player_two, coords_2 = ships_2.choose_ship("Игрок №2", test_board, random_status_2)
+
+    attack_board_player_1 = player_one_board.generateBoard()
+    attack_board_player_2 = player_two_board.generateBoard()
+
+    player_1 = LoseOrWin(x, y)
+    player_1.win_score()
+    player_2 = LoseOrWin(x, y)
+    player_2.win_score()
+
+    input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+    os.system('cls')
+
+    turn = x * y
+    batch = 0
+    random_status_game_1 = range_int(1, 2, "Игрок №1: Как стрелять (1 - руками, 2 - рандомно): ")
+    random_status_game_2 = range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
+
+    for batch in range(turn):
+        one_more_chance_1 = 1
+        one_more_chance_2 = 1
+
+        if batch % 2 == 0:
+
+            while one_more_chance_1 == 1 or one_more_chance_1 == 2:
+                print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
+                destroy_ship = 0
+                game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one, attack_board_player_1, board_player_two, coords_2, random_status_game_1)
+                print("Игрок №1 " + str(game_score_1))
+                input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+                # os.system('cls')
+                if game_score_1 == 20:
+                    break
+            if game_score_1 == 20:
+                print("Игрок 1 победил!")
+                break
+        else:
+
+            while one_more_chance_2 == 1 or one_more_chance_2 == 2:
+                print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
+                game_score_2, board_player_one, one_more_chance_2 = player_2.score(board_player_two, attack_board_player_2, board_player_one, coords_1, random_status_game_2)
+                print("Игрок №2 " + str(game_score_2))
+                input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+                # os.system('cls')
+                if game_score_2 == 20:
+                    break
+            if game_score_2 == 20:
+                print("Игрок 2 победил!")
+                break
