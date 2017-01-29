@@ -270,11 +270,10 @@ class LoseOrWin(Board):
                         else:
                             print("=================== ВОЗМОЖНО Ошибка координат 2.1")
                             guess_col = self.shoot_col
-                            guess_row = self.shoot_row
-                            while guess_row < 1 or guess_row > 10 or \
-                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
-                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
-                                guess_row = randint((self.my_strikes[-1][1] + self.ship_point_counter + 1), (self.my_strikes[-1][1] + self.ship_point_counter + 1))
+                            if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 1:
+                                guess_row = self.my_strikes[-1][1] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == -1:
+                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter + 1
 
                     elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == 0: # Значит координаты не меняются по игрику (ряд)
                         if self.my_strikes[-1][0] + 1 < 11 and \
@@ -296,12 +295,113 @@ class LoseOrWin(Board):
                             guess_row = self.my_strikes[-1][1]
                         else:
                             print("=================== ВОЗМОЖНО Ошибка координат 2.2")
-                            guess_col = self.shoot_col
                             guess_row = self.shoot_row
-                            while guess_col < 1 or guess_col > 10 or \
-                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
-                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
-                                guess_col = randint((self.my_strikes[-1][0] + self.ship_point_counter + 1), (self.my_strikes[-1][0] + self.ship_point_counter + 1))
+                            if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 1:
+                                guess_col = self.my_strikes[-1][0] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][0] - self.my_strikes[-2][0] == -1:
+                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter + 1
+
+                    elif self.my_strikes[-1][0] - self.my_strikes[-3][0] == 0:  # Значит координаты не меняются по иксу (колонна)
+                        if self.my_strikes[-1][1] + 1 < 11 and \
+                                        show_comp_board[self.shoot_row + 1][self.shoot_col] == u'\u00B7' :
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[-1][1] + 1
+                        elif self.my_strikes[-1][1] - 1 > 0 and \
+                                        show_comp_board[self.shoot_row - 1][self.shoot_col] == u'\u00B7' :
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[-1][1] - 1
+                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 11 and \
+                                        show_comp_board[self.my_strikes[-self.ship_point_counter][1] + 1][self.shoot_col] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[- self.ship_point_counter][1] + 1
+                        elif self.my_strikes[-self.ship_point_counter][1] - 1 > 0 and \
+                                        show_comp_board[self.my_strikes[-self.ship_point_counter][1] - 1][self.shoot_col] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[- self.ship_point_counter][1] - 1
+                        else:
+                            print("=================== ВОЗМОЖНО Ошибка координат 2.3")
+                            guess_col = self.shoot_col
+                            if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 1:
+                                guess_row = self.my_strikes[-1][1] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == -1:
+                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter + 1
+
+                    elif self.my_strikes[-1][1] - self.my_strikes[-3][1] == 0: # Значит координаты не меняются по игрику (ряд)
+                        if self.my_strikes[-1][0] + 1 < 11 and \
+                                        show_comp_board[self.shoot_row][self.shoot_col + 1] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0] + 1
+                            guess_row = self.my_strikes[-1][1]
+                        elif self.my_strikes[-1][0] - 1 > 0 and \
+                                        show_comp_board[self.shoot_row][self.shoot_col - 1] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0] - 1
+                            guess_row = self.my_strikes[-1][1]
+
+                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 11 and \
+                                        show_comp_board[self.shoot_row][self.my_strikes[-self.ship_point_counter][0] + 1] == u'\u00B7':
+                            guess_col = self.my_strikes[- self.ship_point_counter][0] + 1
+                            guess_row = self.my_strikes[-1][1]
+                        elif self.my_strikes[-self.ship_point_counter][1] - 1 > 0 and \
+                                        show_comp_board[self.shoot_row][self.my_strikes[-self.ship_point_counter][0] - 1] == u'\u00B7':
+                            guess_col = self.my_strikes[- self.ship_point_counter][0] - 1
+                            guess_row = self.my_strikes[-1][1]
+                        else:
+                            print("=================== ВОЗМОЖНО Ошибка координат 2.4")
+                            guess_row = self.shoot_row
+                            if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 1:
+                                guess_col = self.my_strikes[-1][0] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][0] - self.my_strikes[-2][0] == -1:
+                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter + 1
+
+                    elif self.my_strikes[-1][0] - self.my_strikes[-4][0] == 0:  # Значит координаты не меняются по иксу (колонна)
+                        if self.my_strikes[-1][1] + 1 < 11 and \
+                                        show_comp_board[self.shoot_row + 1][self.shoot_col] == u'\u00B7' :
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[-1][1] + 1
+                        elif self.my_strikes[-1][1] - 1 > 0 and \
+                                        show_comp_board[self.shoot_row - 1][self.shoot_col] == u'\u00B7' :
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[-1][1] - 1
+                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 11 and \
+                                        show_comp_board[self.my_strikes[-self.ship_point_counter][1] + 1][self.shoot_col] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[- self.ship_point_counter][1] + 1
+                        elif self.my_strikes[-self.ship_point_counter][1] - 1 > 0 and \
+                                        show_comp_board[self.my_strikes[-self.ship_point_counter][1] - 1][self.shoot_col] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0]
+                            guess_row = self.my_strikes[- self.ship_point_counter][1] - 1
+                        else:
+                            print("=================== ВОЗМОЖНО Ошибка координат 2.5")
+                            guess_col = self.shoot_col
+                            if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 1:
+                                guess_row = self.my_strikes[-1][1] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == -1:
+                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter + 1
+
+                    elif self.my_strikes[-1][1] - self.my_strikes[-4][1] == 0: # Значит координаты не меняются по игрику (ряд)
+                        if self.my_strikes[-1][0] + 1 < 11 and \
+                                        show_comp_board[self.shoot_row][self.shoot_col + 1] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0] + 1
+                            guess_row = self.my_strikes[-1][1]
+                        elif self.my_strikes[-1][0] - 1 > 0 and \
+                                        show_comp_board[self.shoot_row][self.shoot_col - 1] == u'\u00B7':
+                            guess_col = self.my_strikes[-1][0] - 1
+                            guess_row = self.my_strikes[-1][1]
+
+                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 11 and \
+                                        show_comp_board[self.shoot_row][self.my_strikes[-self.ship_point_counter][0] + 1] == u'\u00B7':
+                            guess_col = self.my_strikes[- self.ship_point_counter][0] + 1
+                            guess_row = self.my_strikes[-1][1]
+                        elif self.my_strikes[-self.ship_point_counter][1] - 1 > 0 and \
+                                        show_comp_board[self.shoot_row][self.my_strikes[-self.ship_point_counter][0] - 1] == u'\u00B7':
+                            guess_col = self.my_strikes[- self.ship_point_counter][0] - 1
+                            guess_row = self.my_strikes[-1][1]
+                        else:
+                            print("=================== ВОЗМОЖНО Ошибка координат 2.6")
+                            guess_row = self.shoot_row
+                            if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 1:
+                                guess_col = self.my_strikes[-1][0] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][0] - self.my_strikes[-2][0] == -1:
+                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter + 1
 
             elif self.one_more_chance == 3 and not self.kill_allship: # Если уже попадал по кораблю не потопил, но потом промазал
 
@@ -349,19 +449,17 @@ class LoseOrWin(Board):
 
                         if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 0:  # Значит координаты не меняются по иксу (колонна)
                             guess_col = self.shoot_col
-                            guess_row = self.shoot_row
-                            while guess_row < 1 or guess_row > 10 or \
-                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
-                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
-                                guess_row = randint((self.my_strikes[-1][1] + self.ship_point_counter + 1), (self.my_strikes[-1][1] + self.ship_point_counter + 1))
+                            if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 1:
+                                guess_row = self.my_strikes[-1][1] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == -1:
+                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter + 1
 
                         elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == 0:  # Значит координаты не меняются по игрику (ряд)
-                            guess_col = self.shoot_col
                             guess_row = self.shoot_row
-                            while guess_col < 1 or guess_col > 10 or \
-                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
-                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
-                                guess_col = randint((self.my_strikes[-1][0] + self.ship_point_counter + 1), (self.my_strikes[-1][0] + self.ship_point_counter + 1))
+                            if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 1:
+                                guess_col = self.my_strikes[-1][0] - (self.ship_point_counter + 1)
+                            elif self.my_strikes[-1][0] - self.my_strikes[-2][0] == -1:
+                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter + 1
                     else:
                         print("===================Ошибка координат 3.2")
 
