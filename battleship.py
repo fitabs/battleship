@@ -221,6 +221,7 @@ class MyShips(Board):
         board = ship_range(num_ships)
         return board , self.all_ship_coords
 
+
 class LoseOrWin(Board):
     """Нужен модуль - from random import randint"""
     def win_score(self):
@@ -228,6 +229,7 @@ class LoseOrWin(Board):
         self.strike_ship = [[], [], [], [], [], [], [], [], [], []]
         self.my_strikes = []
         self.one_more_chance = 0
+        self.kill_allship = True
 
     def score(self, show_my_board, show_comp_board, hide_comp_board, ship_coords, random_status):
 
@@ -239,23 +241,17 @@ class LoseOrWin(Board):
 
                 if self.ship_point_counter == 1:  # Количество подбитых палуб только 1 штука!
 
-                    vert_or_horisont = randint(1, 2)  # (1-горизонтально, 2-вертикально)
-                    if vert_or_horisont == 1:
-                        guess_col = randint(self.shoot_col - 1, self.shoot_col + 1)
-                        guess_row = self.shoot_row
-                        while guess_col < 1 or guess_col > 10 or guess_col == self.shoot_col or show_comp_board[guess_row][guess_col] == "*":
-                            guess_col = randint(self.shoot_col - 1, self.shoot_col + 1)
+                    guess_col = self.shoot_col
+                    guess_row = self.shoot_row
+                    while guess_col < 1 or guess_col > 10 or guess_row < 1 or guess_row > 10 or \
+                                    show_comp_board[guess_row][guess_col] != u'\u00B7' or show_comp_board[guess_row][guess_col] == u'\u2591': # Знак ... █... Unicode
+                        guess_col = randint(self.my_strikes[-1][0] - 1, self.my_strikes[-1][0] + 1)
+                        guess_row = randint(self.my_strikes[-1][1] - 1, self.my_strikes[-1][1] + 1)
 
-                    elif vert_or_horisont == 2:
-                        guess_col = self.shoot_col
-                        guess_row = randint(self.shoot_row - 1, self.shoot_row + 1)
-                        while guess_row < 1 or guess_row > 10 or guess_row == self.shoot_row or show_comp_board[guess_row][guess_col] == "*":
-                            guess_row = randint(self.shoot_row - 1, self.shoot_row + 1)
-
-                elif self.ship_point_counter > 1:
+                elif self.ship_point_counter > 1: # Количество подбитых палуб больше 1 шт подряд!
 
                     if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 0:  # Значит координаты не меняются по иксу (колонна)
-                        if self.my_strikes[-1][1] + 1 < 10 and \
+                        if self.my_strikes[-1][1] + 1 < 11 and \
                                         show_comp_board[self.shoot_row + 1][self.shoot_col] == u'\u00B7' :
                             guess_col = self.my_strikes[-1][0]
                             guess_row = self.my_strikes[-1][1] + 1
@@ -263,7 +259,7 @@ class LoseOrWin(Board):
                                         show_comp_board[self.shoot_row - 1][self.shoot_col] == u'\u00B7' :
                             guess_col = self.my_strikes[-1][0]
                             guess_row = self.my_strikes[-1][1] - 1
-                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 10 and \
+                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 11 and \
                                         show_comp_board[self.my_strikes[-self.ship_point_counter][1] + 1][self.shoot_col] == u'\u00B7':
                             guess_col = self.my_strikes[-1][0]
                             guess_row = self.my_strikes[- self.ship_point_counter][1] + 1
@@ -271,8 +267,16 @@ class LoseOrWin(Board):
                                         show_comp_board[self.my_strikes[-self.ship_point_counter][1] - 1][self.shoot_col] == u'\u00B7':
                             guess_col = self.my_strikes[-1][0]
                             guess_row = self.my_strikes[- self.ship_point_counter][1] - 1
+                        else:
+                            print("=================== ВОЗМОЖНО Ошибка координат 2.1")
+                            guess_col = self.shoot_col
+                            guess_row = self.shoot_row
+                            while guess_col < 1 or guess_col > 10 or guess_row < 1 or guess_row > 10 or \
+                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
+                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
+                                guess_col = randint((self.my_strikes[-1][0] + self.ship_point_counter + 1), (self.my_strikes[-1][0] + self.ship_point_counter + 1))
 
-                    if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 0: # Значит координаты не меняются по игрику (ряд)
+                    elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == 0: # Значит координаты не меняются по игрику (ряд)
                         if self.my_strikes[-1][0] + 1 < 11 and \
                                         show_comp_board[self.shoot_row][self.shoot_col + 1] == u'\u00B7':
                             guess_col = self.my_strikes[-1][0] + 1
@@ -282,7 +286,7 @@ class LoseOrWin(Board):
                             guess_col = self.my_strikes[-1][0] - 1
                             guess_row = self.my_strikes[-1][1]
 
-                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 10 and \
+                        elif self.my_strikes[-self.ship_point_counter][1] + 1 < 11 and \
                                         show_comp_board[self.shoot_row][self.my_strikes[-self.ship_point_counter][0] + 1] == u'\u00B7':
                             guess_col = self.my_strikes[- self.ship_point_counter][0] + 1
                             guess_row = self.my_strikes[-1][1]
@@ -290,33 +294,77 @@ class LoseOrWin(Board):
                                         show_comp_board[self.shoot_row][self.my_strikes[-self.ship_point_counter][0] - 1] == u'\u00B7':
                             guess_col = self.my_strikes[- self.ship_point_counter][0] - 1
                             guess_row = self.my_strikes[-1][1]
+                        else:
+                            print("=================== ВОЗМОЖНО Ошибка координат 2.2")
+                            guess_col = self.shoot_col
+                            guess_row = self.shoot_row
+                            while guess_col < 1 or guess_col > 10 or guess_row < 1 or guess_row > 10 or \
+                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
+                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
+                                guess_row = randint((self.my_strikes[-1][1] + self.ship_point_counter + 1), (self.my_strikes[-1][1] + self.ship_point_counter + 1))
 
-            # elif self.one_more_chance == 3 and not self.kill_allship: # Если уже попадал по кораблю не потопил, но промазал
-            #
-            #     if self.ship_point_counter == 1:  # Количество подбитых палуб только 1 штука!
-            #
-            #         if show_comp_board[self.my_strikes[-1][1]][self.my_strikes[-1][0]] == "*" and \
-            #                         show_comp_board[self.my_strikes[-2][1]][self.my_strikes[-2][0]] == "*" and \
-            #                         show_comp_board[self.my_strikes[-3][1]][self.my_strikes[-3][0]] == "*" and \
-            #                         show_comp_board[self.my_strikes[-4][1]][self.my_strikes[-4][0]] == u'\u2588': # Знак █ █ █ Unicode
-            #             guess_col = self.my_strikes[-2][0] - self.my_strikes[-1][0]
-            #             guess_row = self.shoot_row
-            #         if vert_or_horisont == 1:
-            #             guess_col = randint(self.my_strikes[- self.ship_point_counter][0] - 1, self.my_strikes[- self.ship_point_counter][0] + 1)
-            #             guess_row = self.shoot_row
-            #             while guess_col < 1 or guess_col > 10 or guess_col == self.shoot_col or show_comp_board[guess_row][guess_col] == "*":
-            #                 guess_col = randint(self.shoot_col - 1, self.shoot_col + 1)
-            #
-            #         elif vert_or_horisont == 2:
-            #             guess_col = self.shoot_col
-            #             guess_row = randint(self.shoot_row - 1, self.shoot_row + 1)
-            #             while guess_row < 1 or guess_row > 10 or guess_row == self.shoot_row or show_comp_board[guess_row][guess_col] == "*":
-            #                 guess_row = randint(self.shoot_row - 1, self.shoot_row + 1)
+            elif self.one_more_chance == 3 and not self.kill_allship: # Если уже попадал по кораблю не потопил, но потом промазал
 
+                if self.ship_point_counter == 1:  # Количество подбитых палуб только 1 штука!
 
+                    if show_comp_board[self.my_strikes[-1][1]][self.my_strikes[-1][0]] == "*" and \
+                                    show_comp_board[self.my_strikes[-2][1]][self.my_strikes[-2][0]] == "*" and \
+                                    show_comp_board[self.my_strikes[-3][1]][self.my_strikes[-3][0]] == "*" and \
+                                    show_comp_board[self.my_strikes[-4][1]][self.my_strikes[-4][0]] == u'\u2591': # Знак ... █... Unicode
+                        guess_col = self.shoot_col
+                        guess_row = self.shoot_row
+                        while guess_col < 1 or guess_col > 10 or guess_row < 1 or guess_row > 10 or \
+                                        show_comp_board[guess_row][guess_col] != u'\u00B7' or \
+                                        show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
+                            guess_col = randint(self.my_strikes[-4][0] - 1, self.my_strikes[-4][0] + 1)
+                            guess_row = randint(self.my_strikes[-4][1] - 1, self.my_strikes[-4][1] + 1)
 
+                    elif show_comp_board[self.my_strikes[-1][1]][self.my_strikes[-1][0]] == "*" and \
+                                    show_comp_board[self.my_strikes[-2][1]][self.my_strikes[-2][0]] == "*" and \
+                                    show_comp_board[self.my_strikes[-3][1]][self.my_strikes[-3][0]] == u'\u2591': # Знак ... █... Unicode
+                        guess_col = self.shoot_col
+                        guess_row = self.shoot_row
+                        while guess_col < 1 or guess_col > 10 or guess_row < 1 or guess_row > 10 or \
+                                        show_comp_board[guess_row][guess_col] != u'\u00B7' or \
+                                        show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
+                            guess_col = randint(self.my_strikes[-3][0] - 1, self.my_strikes[-3][0] + 1)
+                            guess_row = randint(self.my_strikes[-3][1] - 1, self.my_strikes[-3][1] + 1)
 
+                    elif show_comp_board[self.my_strikes[-1][1]][self.my_strikes[-1][0]] == "*" and \
+                                    show_comp_board[self.my_strikes[-2][1]][self.my_strikes[-2][0]] == u'\u2591': # Знак ... █... Unicode
+                        guess_col = self.shoot_col
+                        guess_row = self.shoot_row
+                        while guess_col < 1 or guess_col > 10 or guess_row < 1 or guess_row > 10 or \
+                                        show_comp_board[guess_row][guess_col] != u'\u00B7' or \
+                                        show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
+                            guess_col = randint(self.my_strikes[-2][0] - 1, self.my_strikes[-2][0] + 1)
+                            guess_row = randint(self.my_strikes[-2][1] - 1, self.my_strikes[-2][1] + 1)
+                    else:
+                        print("===================Ошибка координат 3.1")
 
+                if self.ship_point_counter > 1:  # Количество подбитых палуб больше 1 штуки!
+
+                    if show_comp_board[self.my_strikes[-1][1]][self.my_strikes[-1][0]] == "*" and \
+                                    show_comp_board[self.my_strikes[-2][1]][self.my_strikes[-2][0]] == u'\u2591': # Знак ... █... Unicode
+
+                        if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 0:  # Значит координаты не меняются по иксу (колонна)
+                            guess_col = self.shoot_col
+                            guess_row = self.shoot_row
+                            while guess_col < 1 or guess_col > 10 or \
+                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
+                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
+                                guess_col = randint((self.my_strikes[-1][0] + self.ship_point_counter + 1),(self.my_strikes[-1][0] + self.ship_point_counter + 1))
+
+                        elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == 0:  # Значит координаты не меняются по игрику (ряд)
+
+                            guess_col = self.shoot_col
+                            guess_row = self.shoot_row
+                            while guess_row < 1 or guess_row > 10 or \
+                                            show_comp_board[guess_row][guess_col] != u'\u00B7' or \
+                                            show_comp_board[guess_row][guess_col] == u'\u2591':  # Знак ... █... Unicode
+                                guess_row = randint((self.my_strikes[-1][1] + self.ship_point_counter + 1), (self.my_strikes[-1][1] + self.ship_point_counter + 1))
+                    else:
+                        print("===================Ошибка координат 3.2")
 
             else:
                 guess_col = randint(1, 10)
@@ -324,6 +372,7 @@ class LoseOrWin(Board):
                 while show_comp_board[guess_row][guess_col] == "*" or show_comp_board[guess_row][guess_col] == u'\u2591':
                     guess_col = randint(1, 10)
                     guess_row = randint(1, 10)
+
             """Сохраняем данные предыдущего выстрела"""
             self.shoot_col = guess_col
             self.shoot_row = guess_row
@@ -343,7 +392,7 @@ class LoseOrWin(Board):
                 guess_row = int(coordinates[1])
             elif len(coordinates) == 6:
                 guess_row = int(coordinates[1] + coordinates[2])
-        os.system('cls')
+        # os.system('cls')
 
         if hide_comp_board[guess_row][guess_col] == u'\u2588': # Знак █ █ █ Unicode
             print("\n" + "{:^110}".format(" Ты попал! ") + "\n")
@@ -417,8 +466,14 @@ class LoseOrWin(Board):
                 else:
                     self.one_more_chance = 0  # Просто промазал
 
-        board = self.modificateBoard(show_my_board, show_comp_board)
-        self.printBoard(board)
+        if show_comp_board[self.shoot_row][self.shoot_col] == "*":
+            show_comp_board[self.shoot_row][self.shoot_col] = "X"
+            board = self.modificateBoard(show_my_board, show_comp_board)
+            self.printBoard(board)
+            show_comp_board[self.shoot_row][self.shoot_col] = "*"
+        else:
+            board = self.modificateBoard(show_my_board, show_comp_board)
+            self.printBoard(board)
 
         return self.win, hide_comp_board, self.one_more_chance
 
@@ -470,29 +525,31 @@ if __name__ == '__main__':
     random_status_game_2 = range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
 
     for batch in range(turn):
+        one_more_chance_1 = 1
+        one_more_chance_2 = 1
 
         if batch % 2 == 0:
-            one_more_chance_1 = 1
-            while one_more_chance_1 > 0:
+
+            while one_more_chance_1 == 1 or one_more_chance_1 == 2:
                 print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
                 destroy_ship = 0
                 game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one, attack_board_player_1, board_player_two, coords_2, random_status_game_1)
                 print("Игрок №1 " + str(game_score_1))
                 input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-                os.system('cls')
+                # os.system('cls')
                 if game_score_1 == 20:
                     break
             if game_score_1 == 20:
                 print("Игрок 1 победил!")
                 break
         else:
-            one_more_chance_2 = 1
-            while one_more_chance_2 > 0:
+
+            while one_more_chance_2 == 1 or one_more_chance_2 == 2:
                 print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
                 game_score_2, board_player_one, one_more_chance_2 = player_2.score(board_player_two, attack_board_player_2, board_player_one, coords_1, random_status_game_2)
                 print("Игрок №2 " + str(game_score_2))
                 input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-                os.system('cls')
+                # os.system('cls')
                 if game_score_2 == 20:
                     break
             if game_score_2 == 20:
