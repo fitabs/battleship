@@ -470,11 +470,6 @@ class LoseOrWin(Board):
                     guess_col = randint(1, 10)
                     guess_row = randint(1, 10)
 
-            """Сохраняем данные предыдущего выстрела"""
-            self.shoot_col = guess_col
-            self.shoot_row = guess_row
-            self.my_strikes.append([guess_col, guess_row])
-
         else:  # Вводим координаты вручную
             coordinates = "1a1"
             while not coordinates[0].isalpha() or not coordinates[0] in ascii_letters or \
@@ -490,6 +485,11 @@ class LoseOrWin(Board):
             elif len(coordinates) == 6:
                 guess_row = int(coordinates[1] + coordinates[2])
         os.system('cls')
+
+        """Сохраняем данные предыдущего выстрела"""
+        self.shoot_col = guess_col
+        self.shoot_row = guess_row
+        self.my_strikes.append([guess_col, guess_row])
 
         if hide_comp_board[guess_row][guess_col] == u'\u2588': # Знак █ █ █ Unicode
             print("\n" + "{:^110}".format(" Ты попал! ") + "\n")
@@ -568,15 +568,22 @@ class LoseOrWin(Board):
             board = self.modificateBoard(show_my_board, show_comp_board)
             self.printBoard(board)
             show_comp_board[self.shoot_row][self.shoot_col] = "*"
+
+        elif show_comp_board[self.shoot_row][self.shoot_col] == u'\u2591':
+            show_comp_board[self.shoot_row][self.shoot_col] = u'\u2593'
+            board = self.modificateBoard(show_my_board, show_comp_board)
+            self.printBoard(board)
+            show_comp_board[self.shoot_row][self.shoot_col] = u'\u2591'
+
         else:
             board = self.modificateBoard(show_my_board, show_comp_board)
             self.printBoard(board)
 
         return self.win, hide_comp_board, self.one_more_chance
 
-class Game:
+class Game(object):
 
-    def battleship(self):
+    def battle(self):
 
         os.system('cls')
         x = 10
@@ -649,11 +656,169 @@ class Game:
                     print("Игрок 2 победил!")
                     break
 
+
+from random import randint
+from string import ascii_letters
+import os
+from tkinter import *
+
+
+def game_for_one():
+
+    x = 10
+    y = 10
+
+    player_one_board = Board(x, y)
+    test_board = player_one_board.generateBoard()
+    print_test_board = player_one_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
+    ships_1 = MyShips(x, y)
+    ships_1.set_all_ships_cords()
+    random_status_1 = 2  # range_int(1, 2, "Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
+    board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
+
+    player_two_board = Board(x, y)
+    test_board = player_two_board.generateBoard()
+    print_test_board = player_two_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
+    ships_2 = MyShips(x, y)
+    ships_2.set_all_ships_cords()
+    random_status_2 = 2  # range_int(1, 2, "Игрок №2: Как разместить корабли (1 - руками, 2 - рандомно): ")
+    board_player_two, coords_2 = ships_2.choose_ship("Игрок №2", test_board, random_status_2)
+
+    attack_board_player_1 = player_one_board.generateBoard()
+    attack_board_player_2 = player_two_board.generateBoard()
+
+    player_1 = LoseOrWin(x, y)
+    player_1.win_score()
+    player_2 = LoseOrWin(x, y)
+    player_2.win_score()
+
+    turn = x * y
+    batch = 0
+    random_status_game_1 = 1  # range_int(1, 2, "Игрок №1: Как стрелять (1 - руками, 2 - рандомно): ")
+    random_status_game_2 = 2  # range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
+
+    for batch in range(turn):
+        one_more_chance_1 = 1
+        one_more_chance_2 = 1
+
+        if batch % 2 == 0:
+
+            while one_more_chance_1 == 1 or one_more_chance_1 == 2:
+                print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
+                destroy_ship = 0
+                game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one,
+                                                                                   attack_board_player_1,
+                                                                                   board_player_two, coords_2,
+                                                                                   random_status_game_1)
+                print("Игрок №1 " + str(game_score_1))
+                input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+                os.system('cls')
+                if game_score_1 == 20:
+                    break
+            if game_score_1 == 20:
+                print("Игрок 1 победил!")
+                break
+        else:
+
+            while one_more_chance_2 == 1 or one_more_chance_2 == 2:
+                print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
+                game_score_2, board_player_one, one_more_chance_2 = player_2.score(board_player_two,
+                                                                                   attack_board_player_2,
+                                                                                   board_player_one, coords_1,
+                                                                                   random_status_game_2)
+                print("Игрок №2 " + str(game_score_2))
+                input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+                os.system('cls')
+                if game_score_2 == 20:
+                    break
+            if game_score_2 == 20:
+                print("Игрок 2 победил!")
+                break
+
+    #################################################################################################################
+
+
+
+def game_for_two():
+    win = Toplevel(root)
+    win.geometry('800x500')
+    label1 = Label(win, text="12asdasdsasa3dews")
+
+
+def game_settings():
+    pass
+
+
+def exit_app():
+    root.destroy()
+
+
+def canvas_line(canv):  # Линии на досках
+    for y in range(11):
+        k = 30 * y
+        canv.create_line(20 + k, 320, 20 + k, 20, width=1, fill="blue")
+
+    for x in range(11):
+        k = 30 * x
+        canv.create_line(20, 20 + k, 320, 20 + k, width=1, fill="blue")
+
+
+def canvas_coords_name(canv):
+    for y in range(10):
+        k = 30 * y
+        canv.create_text(35 + k, 10, text=ascii_letters[y], fill="blue")
+        canv.create_text(35 + k, 330, text=ascii_letters[y], fill="blue")
+
+    for x in range(10):
+        k = 30 * x
+        canv.create_text(10, 35 + k, text=x+1, fill="blue")
+        canv.create_text(330, 35 + k, text=x+1, fill="blue")
+
+root = Tk()
+root.title("Battleship 3.0")
+# root.geometry('1000x500')
+
+main_menu = Menu(root)
+root.configure(menu=main_menu)
+
+first_item = Menu(main_menu, tearoff=0)
+main_menu.add_cascade(label="Новая игра", menu=first_item)
+first_item.add_command(label="1 Игрок", command=game_for_one)
+first_item.add_command(label="2 Игрока", command=game_for_two)
+first_item.add_separator()
+first_item.add_command(label="Настройка", command=game_settings)
+first_item.add_separator()
+first_item.add_command(label="Выход", command=exit_app)
+
+label1 = Label(root, text="Игрок 1")
+label1.grid(row=0, column=0)
+label2 = Label(root, text="Игрок 2")
+label2.grid(row=0, column=3)
+
+canv1 = Canvas(root, width=340, height=340, bg='#001', cursor="boat")
+canvas_line(canv1)
+canvas_coords_name(canv1)
+canv1.grid(row=1, column=0)
+canv2 = Canvas(root, width=340, height=340, bg='#001', cursor="target")
+canvas_line(canv2)
+canvas_coords_name(canv2)
+canv2.grid(row=1, column=3)
+
+
+canv_separator1 = Canvas(root, width=50, height=30)
+canv_separator1.grid(row=3, column=2)
+
+
+# button1 = Button(root, text="1 Игрок", font=30, command=game_for_one)
+# button1.grid(row=1, column=0, sticky="ew")
+# button2 = Button(root, text="2 Игрока", font=30, command=game_for_two)
+# button2.grid(row=2, column=0, sticky="ew")
+# button3 = Button(root, text="Настройка", font=30, command=game_settings)
+# button3.grid(row=3, columnspan=2, sticky="ew")
+
+root.mainloop()
+
 if __name__ == '__main__':
 
-    from random import randint
-    from string import ascii_letters
-    import os
-
     game = Game()
-    game.battleship()
+    game.battle()

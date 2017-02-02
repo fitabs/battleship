@@ -489,7 +489,12 @@ class LoseOrWin(Board):
                 guess_row = int(coordinates[1])
             elif len(coordinates) == 6:
                 guess_row = int(coordinates[1] + coordinates[2])
-        # os.system('cls')
+        os.system('cls')
+
+        """Сохраняем данные предыдущего выстрела"""
+        self.shoot_col = guess_col
+        self.shoot_row = guess_row
+        self.my_strikes.append([guess_col, guess_row])
 
         if hide_comp_board[guess_row][guess_col] == u'\u2588': # Знак █ █ █ Unicode
             print("\n" + "{:^110}".format(" Ты попал! ") + "\n")
