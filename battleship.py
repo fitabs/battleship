@@ -579,7 +579,7 @@ class LoseOrWin(Board):
             board = self.modificateBoard(show_my_board, show_comp_board)
             self.printBoard(board)
 
-        return self.win, hide_comp_board, self.one_more_chance
+        return self.win, hide_comp_board, self.one_more_chance, show_my_board, show_comp_board
 
 class Game(object):
 
@@ -664,7 +664,6 @@ from tkinter import *
 
 
 def game_for_one():
-
     x = 10
     y = 10
 
@@ -676,10 +675,7 @@ def game_for_one():
     random_status_1 = 2  # range_int(1, 2, "Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
     board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
 
-    # for ship in coords_1:   20+(point[0]-1)*30, 20+(point[1]-1)*30, 50+(point[0]-1)*30, 50+(point[1]-1)*30
-    #     for point in ship:
-    canv2.create_rectangle(25, 25, 50, 50, fill='red', outline="red")
-
+    print_desk_gui(board_player_one, canv1)
 
     player_two_board = Board(x, y)
     test_board = player_two_board.generateBoard()
@@ -711,10 +707,12 @@ def game_for_one():
             while one_more_chance_1 == 1 or one_more_chance_1 == 2:
                 print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
                 destroy_ship = 0
-                game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one,
+                game_score_1, board_player_two, one_more_chance_1, show_my_board1, show_comp_board1 = player_1.score(board_player_one,
                                                                                    attack_board_player_1,
                                                                                    board_player_two, coords_2,
                                                                                    random_status_game_1)
+                print_desk_gui(show_my_board1, canv1)
+                print_desk_gui(show_comp_board1, canv2)
                 print("Игрок №1 " + str(game_score_1))
                 input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
                 if game_score_1 == 20:
@@ -726,10 +724,11 @@ def game_for_one():
 
             while one_more_chance_2 == 1 or one_more_chance_2 == 2:
                 print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
-                game_score_2, board_player_one, one_more_chance_2 = player_2.score(board_player_two,
+                game_score_2, board_player_one, one_more_chance_2, show_my_board2, show_comp_board2 = player_2.score(board_player_two,
                                                                                    attack_board_player_2,
                                                                                    board_player_one, coords_1,
                                                                                    random_status_game_2)
+                print_desk_gui(show_comp_board2, canv1)
                 print("Игрок №2 " + str(game_score_2))
                 input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
                 if game_score_2 == 20:
@@ -739,6 +738,7 @@ def game_for_one():
                 break
 
 def game_for_two():
+    canv2.create_rectangle(25, 25, 150, 150, fill='red', outline="red")
     win = Toplevel(root)
     win.geometry('800x500')
     label1 = Label(win, text="12asdasdsasa3dews")
@@ -750,6 +750,24 @@ def game_settings():
 
 def exit_app():
     root.destroy()
+
+
+def print_desk_gui(board, canv):
+    for counter_row in range(1, 11):
+        for counter_col in range(1, 11):
+            for point in board[counter_row][counter_col]:
+                if point == u'\u2588':
+                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#726bff', outline="blue")
+                elif point == u'\u2591':
+                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#ba47fc', outline="#c038ff")
+                elif point == u'\u2593':
+                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#ba47fc', outline="red")
+                elif point == "*":
+                    canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#005', outline="blue")
+                elif point == "X":
+                    canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#4f7af0', outline="red")
+
+    root.update()
 
 
 def canvas_line(canv):  # Линии на досках
@@ -795,8 +813,6 @@ canvas_line(canv2)
 canvas_coords_name(canv2)
 canv2.grid(row=1, column=3)
 
-canv1.create_rectangle(25, 25, 50, 50, fill='red', outline="red")
-
 canv_separator1 = Canvas(root, width=50, height=30)
 canv_separator1.grid(row=3, column=2)
 
@@ -819,8 +835,3 @@ first_item.add_command(label="Выход", command=exit_app)
 # button3.grid(row=3, columnspan=2, sticky="ew")
 
 root.mainloop()
-
-if __name__ == '__main__':
-
-    game = Game()
-    game.battle()
