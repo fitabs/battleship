@@ -231,10 +231,21 @@ class LoseOrWin(Board):
         self.one_more_chance = 0
         self.kill_allship = True
 
-    def score(self, show_my_board, show_comp_board, hide_comp_board, ship_coords, random_status):
+    def score(self, show_my_board, show_comp_board, hide_comp_board, ship_coords, random_status, gui_status=0, coords_clic=0):
 
         board = self.modificateBoard(show_my_board, show_comp_board)
         self.printBoard(board)
+
+
+        try:
+            if show_comp_board[self.shoot_row][self.shoot_col] == "X":  # Возврат доски в нормальное состояние (обнуление предыдущего попадания)
+                show_comp_board[self.shoot_row][self.shoot_col] = "*"
+            elif show_comp_board[self.shoot_row][self.shoot_col] == u'\u2593':
+                show_comp_board[self.shoot_row][self.shoot_col] = u'\u2591'
+        except AttributeError:
+            pass
+
+
 
         if random_status == 2:  # Рандомно стреляем по кораблям
             if self.one_more_chance == 2 and not self.kill_allship:  # Если попал по кораблю но ещё не потопил
@@ -471,19 +482,23 @@ class LoseOrWin(Board):
                     guess_row = randint(1, 10)
 
         else:  # Вводим координаты вручную
-            coordinates = "1a1"
-            while not coordinates[0].isalpha() or not coordinates[0] in ascii_letters or \
-                    not coordinates[1].isdigit() or coordinates[1] == "0" or \
-                    not coordinates[2].isdigit() or coordinates[2] != "0":
-                coordinates = input("\n" + "Введите координаты (Например B4): ")
-                coordinates += "023"
+            if gui_status == 0:
+                coordinates = "1a1"
+                while not coordinates[0].isalpha() or not coordinates[0] in ascii_letters or \
+                        not coordinates[1].isdigit() or coordinates[1] == "0" or \
+                        not coordinates[2].isdigit() or coordinates[2] != "0":
+                    coordinates = input("\n" + "Введите координаты (Например B4): ")
+                    coordinates += "023"
 
-            guess_alpha = coordinates[0]
-            guess_col = search_char(guess_alpha)
-            if len(coordinates) == 5:
-                guess_row = int(coordinates[1])
-            elif len(coordinates) == 6:
-                guess_row = int(coordinates[1] + coordinates[2])
+                guess_alpha = coordinates[0]
+                guess_col = search_char(guess_alpha)
+                if len(coordinates) == 5:
+                    guess_row = int(coordinates[1])
+                elif len(coordinates) == 6:
+                    guess_row = int(coordinates[1] + coordinates[2])
+            elif gui_status == 1:
+                guess_col = coords_clic[0]
+                guess_row = coords_clic[1]
         os.system('cls')
 
         """Сохраняем данные предыдущего выстрела"""
@@ -567,14 +582,10 @@ class LoseOrWin(Board):
             show_comp_board[self.shoot_row][self.shoot_col] = "X"
             board = self.modificateBoard(show_my_board, show_comp_board)
             self.printBoard(board)
-            show_comp_board[self.shoot_row][self.shoot_col] = "*"
-
         elif show_comp_board[self.shoot_row][self.shoot_col] == u'\u2591':
             show_comp_board[self.shoot_row][self.shoot_col] = u'\u2593'
             board = self.modificateBoard(show_my_board, show_comp_board)
             self.printBoard(board)
-            show_comp_board[self.shoot_row][self.shoot_col] = u'\u2591'
-
         else:
             board = self.modificateBoard(show_my_board, show_comp_board)
             self.printBoard(board)
@@ -632,7 +643,6 @@ class Game(object):
 
                 while one_more_chance_1 == 1 or one_more_chance_1 == 2:
                     print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
-                    destroy_ship = 0
                     game_score_1, board_player_two, one_more_chance_1 = player_1.score(board_player_one, attack_board_player_1, board_player_two, coords_2, random_status_game_1)
                     print("Игрок №1 " + str(game_score_1))
                     input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
@@ -666,6 +676,7 @@ from tkinter import *
 def game_for_one():
     x = 10
     y = 10
+    gui_status = 1
 
     player_one_board = Board(x, y)
     test_board = player_one_board.generateBoard()
@@ -693,49 +704,55 @@ def game_for_one():
     player_2 = LoseOrWin(x, y)
     player_2.win_score()
 
-    turn = x * y
-    batch = 0
     random_status_game_1 = 1  # range_int(1, 2, "Игрок №1: Как стрелять (1 - руками, 2 - рандомно): ")
     random_status_game_2 = 2  # range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
 
-    for batch in range(turn):
-        one_more_chance_1 = 1
-        one_more_chance_2 = 1
 
-        if batch % 2 == 0:
-
-            while one_more_chance_1 == 1 or one_more_chance_1 == 2:
-                print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
-                destroy_ship = 0
-                game_score_1, board_player_two, one_more_chance_1, show_my_board1, show_comp_board1 = player_1.score(board_player_one,
-                                                                                   attack_board_player_1,
-                                                                                   board_player_two, coords_2,
-                                                                                   random_status_game_1)
-                print_desk_gui(show_my_board1, canv1)
-                print_desk_gui(show_comp_board1, canv2)
-                print("Игрок №1 " + str(game_score_1))
-                input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-                if game_score_1 == 20:
-                    break
-            if game_score_1 == 20:
-                print("Игрок 1 победил!")
-                break
+    def mouse_input(event,
+                    board_player_one, attack_board_player_1, board_player_two, coords_2, random_status_game_1,
+                    gui_status, coords_1, random_status_game_2, attack_board_player_2):
+        x = event.x  # canv2.canvasx(event.x)  # получаем x координату точки, в которой кликнули
+        y = event.y  # canv2.canvasy(event.y)  # получаем y координату точки, в которой кликнули
+        if x == 20:
+            mouse_x = 1
         else:
+            mouse_x = int(round((x - 20) // 30, 0))
+        if y == 20:
+            mouse_y = 1
+        else:
+            mouse_y = int(round((y - 20) // 30, 0))
+        coords_clic = [mouse_x, mouse_y]
 
+        print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
+        game_score_1, board_player_two, one_more_chance_1, show_my_board1, show_comp_board1 = player_1.score(
+            board_player_one, attack_board_player_1, board_player_two, coords_2, random_status_game_1, gui_status,
+            coords_clic)
+        print_desk_gui(show_my_board1, canv1)
+        print_desk_gui(show_comp_board1, canv2)
+        print("Игрок №1 " + str(game_score_1))
+        # input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+        if game_score_1 == 20:
+            print("Игрок 1 победил!")
+        if one_more_chance_1 == 1 or one_more_chance_1 == 2:
+            pass
+        else:
+            one_more_chance_2 = 1
             while one_more_chance_2 == 1 or one_more_chance_2 == 2:
                 print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
-                game_score_2, board_player_one, one_more_chance_2, show_my_board2, show_comp_board2 = player_2.score(board_player_two,
-                                                                                   attack_board_player_2,
-                                                                                   board_player_one, coords_1,
-                                                                                   random_status_game_2)
+                game_score_2, board_player_one, one_more_chance_2, show_my_board2, show_comp_board2 = player_2.score(
+                    board_player_two, attack_board_player_2, board_player_one, coords_1, random_status_game_2,
+                    gui_status)
                 print_desk_gui(show_comp_board2, canv1)
                 print("Игрок №2 " + str(game_score_2))
-                input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
+                # input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
                 if game_score_2 == 20:
+                    print("Игрок 2 победил!")
                     break
-            if game_score_2 == 20:
-                print("Игрок 2 победил!")
-                break
+
+    while True:
+        canv2.bind("<Button-1>", mouse_input(board_player_one, attack_board_player_1, board_player_two, coords_2, random_status_game_1, gui_status,
+                    coords_1, random_status_game_2, attack_board_player_2))
+
 
 def game_for_two():
     canv2.create_rectangle(25, 25, 150, 150, fill='red', outline="red")
@@ -766,8 +783,8 @@ def print_desk_gui(board, canv):
                     canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#005', outline="blue")
                 elif point == "X":
                     canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#4f7af0', outline="red")
-
     root.update()
+
 
 
 def canvas_line(canv):  # Линии на досках
@@ -798,7 +815,6 @@ root.title("Battleship 3.0")
 main_menu = Menu(root)
 root.configure(menu=main_menu)
 
-
 label1 = Label(root, text="Игрок 1")
 label1.grid(row=0, column=0)
 label2 = Label(root, text="Игрок 2")
@@ -815,7 +831,6 @@ canv2.grid(row=1, column=3)
 
 canv_separator1 = Canvas(root, width=50, height=30)
 canv_separator1.grid(row=3, column=2)
-
 
 first_item = Menu(main_menu, tearoff=0)
 main_menu.add_cascade(label="Новая игра", menu=first_item)
