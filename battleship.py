@@ -678,7 +678,7 @@ def game_for_one():
 
     # for ship in coords_1:   20+(point[0]-1)*30, 20+(point[1]-1)*30, 50+(point[0]-1)*30, 50+(point[1]-1)*30
     #     for point in ship:
-    canv1.create_rectangle(25, 25, 50, 50, fill='red', outline="red")
+    canv2.create_rectangle(25, 25, 50, 50, fill='red', outline="red")
 
 
     player_two_board = Board(x, y)
