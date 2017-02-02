@@ -676,6 +676,11 @@ def game_for_one():
     random_status_1 = 2  # range_int(1, 2, "Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
     board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
 
+    # for ship in coords_1:   20+(point[0]-1)*30, 20+(point[1]-1)*30, 50+(point[0]-1)*30, 50+(point[1]-1)*30
+    #     for point in ship:
+    canv1.create_rectangle(25, 25, 50, 50, fill='red', outline="red")
+
+
     player_two_board = Board(x, y)
     test_board = player_two_board.generateBoard()
     print_test_board = player_two_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
@@ -712,7 +717,6 @@ def game_for_one():
                                                                                    random_status_game_1)
                 print("Игрок №1 " + str(game_score_1))
                 input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-                os.system('cls')
                 if game_score_1 == 20:
                     break
             if game_score_1 == 20:
@@ -728,17 +732,11 @@ def game_for_one():
                                                                                    random_status_game_2)
                 print("Игрок №2 " + str(game_score_2))
                 input("\n" + "{:-^110}".format(" Enter чтобы продолжить "))
-                os.system('cls')
                 if game_score_2 == 20:
                     break
             if game_score_2 == 20:
                 print("Игрок 2 победил!")
                 break
-
-    #################################################################################################################
-
-
-
 
 def game_for_two():
     win = Toplevel(root)
@@ -782,14 +780,6 @@ root.title("Battleship 3.0")
 main_menu = Menu(root)
 root.configure(menu=main_menu)
 
-first_item = Menu(main_menu, tearoff=0)
-main_menu.add_cascade(label="Новая игра", menu=first_item)
-first_item.add_command(label="1 Игрок", command=game_for_one)
-first_item.add_command(label="2 Игрока", command=game_for_two)
-first_item.add_separator()
-first_item.add_command(label="Настройка", command=game_settings)
-first_item.add_separator()
-first_item.add_command(label="Выход", command=exit_app)
 
 label1 = Label(root, text="Игрок 1")
 label1.grid(row=0, column=0)
@@ -805,9 +795,20 @@ canvas_line(canv2)
 canvas_coords_name(canv2)
 canv2.grid(row=1, column=3)
 
+canv1.create_rectangle(25, 25, 50, 50, fill='red', outline="red")
 
 canv_separator1 = Canvas(root, width=50, height=30)
 canv_separator1.grid(row=3, column=2)
+
+
+first_item = Menu(main_menu, tearoff=0)
+main_menu.add_cascade(label="Новая игра", menu=first_item)
+first_item.add_command(label="1 Игрок", command=game_for_one)
+first_item.add_command(label="2 Игрока", command=game_for_two)
+first_item.add_separator()
+first_item.add_command(label="Настройка", command=game_settings)
+first_item.add_separator()
+first_item.add_command(label="Выход", command=exit_app)
 
 
 # button1 = Button(root, text="1 Игрок", font=30, command=game_for_one)
