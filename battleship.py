@@ -739,6 +739,7 @@ def game_for_one():
 
 
 
+
 def game_for_two():
     win = Toplevel(root)
     win.geometry('800x500')
