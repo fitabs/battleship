@@ -684,6 +684,13 @@ def game_for_one():
     x = 10
     y = 10
 
+    global player_1
+    global player_2
+    global ships_1
+    global ships_2
+    global attack_board_player_1
+    global attack_board_player_2
+
     player_one_board = Board(x, y)
     test_board = player_one_board.generateBoard()
     print_test_board = player_one_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
@@ -716,14 +723,18 @@ def game_for_one():
 def mouse_input(event):
     x = event.x  # canv2.canvasx(event.x)  # получаем x координату точки, в которой кликнули
     y = event.y  # canv2.canvasy(event.y)  # получаем y координату точки, в которой кликнули
+
+    global mouse_x
+    global mouse_y
+
     if x == 20:
         mouse_x = 1
     else:
-        mouse_x = int(round((x - 20) // 30, 0))
+        mouse_x = int(round((x - 20) / 30, 0))
     if y == 20:
         mouse_y = 1
     else:
-        mouse_y = int(round((y - 20) // 30, 0))
+        mouse_y = int(round((y - 20) / 30, 0))
 
     gui_status = 1
 
@@ -742,7 +753,7 @@ def mouse_input(event):
 
     # if one_more_chance_2 == 1 or one_more_chance_2 == 2:
     print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
-    game_score_2, ships_1.board, one_more_chance_2,show_my_board2, show_comp_board2 = player_2.score(ships_2.board,
+    game_score_2, ships_1.board, one_more_chance_2, show_my_board2, show_comp_board2 = player_2.score(ships_2.board,
                                                                        attack_board_player_2,
                                                                        ships_1.board, ships_1.all_ship_coords,
                                                                        random_status_game_2, gui_status)
