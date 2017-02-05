@@ -66,6 +66,7 @@ class MyShips(Board):
         self.board = board
         all_ships = {1:4, 2:3, 3:2, 4:1}  # 1:4 == 1 палубный корабль 4 штук
         num_ships = 10
+        self.one_more_chance = 1
 
         def ship_range(remain):
             if sum(all_ships.values()) > 0:
@@ -131,7 +132,6 @@ class MyShips(Board):
                             all_ships[type_ship] -= 1
                             self.all_ship_coords[sum(all_ships.values())].append(coords)
                             board[ship_y][ship_x] = u'\u2588'
-                            os.system('cls')
                             self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + "  Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
                             print(all_ships)
                             print(self.all_ship_coords)
@@ -174,7 +174,6 @@ class MyShips(Board):
                                     coords.append(ship_y)
                                     self.all_ship_coords[sum(all_ships.values())].append(coords)
                                     board[ship_y][ship_x + x] = u'\u2588'
-                                    os.system('cls')
                                     self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + " Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
                                 print(all_ships)
                                 print(self.all_ship_coords)
@@ -212,7 +211,6 @@ class MyShips(Board):
                                     coords.append(ship_y + y)
                                     self.all_ship_coords[sum(all_ships.values())].append(coords)
                                     board[ship_y + y][ship_x] = u'\u2588'
-                                    os.system('cls')
                                     self.printBoard(board, message="{:*^110}".format(" " + str(player_name) + " Осталось расставить " + str(sum(all_ships.values())) + " кораблей "))
                                 print(all_ships)
                                 print(self.all_ship_coords)
@@ -499,7 +497,6 @@ class LoseOrWin(Board):
             elif gui_status == 1:
                 guess_col = mouse_x
                 guess_row = mouse_y
-        os.system('cls')
 
         """Сохраняем данные предыдущего выстрела"""
         self.shoot_col = guess_col
@@ -559,7 +556,6 @@ class LoseOrWin(Board):
                                 if corrdinates_on_board([ship[0][1]], [ship[0][0] - 1]): show_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
                                 if corrdinates_on_board([ship[0][1]], [ship[ship_type-1][0] + 1]): hide_comp_board[ship[0][1]][ship[ship_type-1][0] + 1] = "*"
                                 if corrdinates_on_board([ship[0][1]], [ship[0][0] - 1]): hide_comp_board[ship[0][1]][ship[0][0] - 1] = "*"
-
                 counter += 1
             self.win += 1
         else:
@@ -590,7 +586,7 @@ class LoseOrWin(Board):
             board = self.modificateBoard(show_my_board, show_comp_board)
             self.printBoard(board)
 
-        return self.win, hide_comp_board, self.one_more_chance, show_my_board, show_comp_board
+        return self.win, hide_comp_board, self.one_more_chance, show_comp_board
 
 class Game(object):
 
@@ -676,11 +672,11 @@ from tkinter import *
 random_status_game_1 = 1  # range_int(1, 2, "Игрок №1: Как стрелять (1 - руками, 2 - рандомно): ")
 random_status_game_2 = 2  # range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
 
-one_more_chance_1 = 1
-one_more_chance_2 = 1
-
 
 def game_for_one():
+    canvas_clear(canv1)
+    canvas_clear(canv2)
+
     x = 10
     y = 10
 
@@ -691,20 +687,16 @@ def game_for_one():
     global attack_board_player_1
     global attack_board_player_2
 
-    player_one_board = Board(x, y)
-    test_board = player_one_board.generateBoard()
-    print_test_board = player_one_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
     ships_1 = MyShips(x, y)
+    test_board = ships_1.generateBoard()
     ships_1.set_all_ships_cords()
     random_status_1 = 2  # range_int(1, 2, "Игрок №1: Как разместить корабли (1 - руками, 2 - рандомно): ")
     board_player_one, coords_1 = ships_1.choose_ship("Игрок №1", test_board, random_status_1)
 
     print_desk_gui(board_player_one, canv1)
 
-    player_two_board = Board(x, y)
-    test_board = player_two_board.generateBoard()
-    print_test_board = player_two_board.printBoard(test_board, "{:*^110}".format(" Игровая доска "))
     ships_2 = MyShips(x, y)
+    test_board = ships_2.generateBoard()
     ships_2.set_all_ships_cords()
     random_status_2 = 2  # range_int(1, 2, "Игрок №2: Как разместить корабли (1 - руками, 2 - рандомно): ")
     board_player_two, coords_2 = ships_2.choose_ship("Игрок №2", test_board, random_status_2)
@@ -730,36 +722,99 @@ def mouse_input(event):
     if x == 20:
         mouse_x = 1
     else:
-        mouse_x = int(round((x - 20) / 30, 0))
+        mouse_x = (x - 20) // 30 + 1
     if y == 20:
         mouse_y = 1
     else:
-        mouse_y = int(round((y - 20) / 30, 0))
+        mouse_y = (y - 20) // 30 + 1
+
+    if  mouse_x > 0 and mouse_y > 0 and mouse_x < 11 and mouse_y < 11:
+        game_gui()
+
+
+def game_gui():
 
     gui_status = 1
 
-    # if one_more_chance_1 == 1 or one_more_chance_1 == 2:
-    print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
-    game_score_1, ships_2.board, one_more_chance_1, show_my_board1, show_comp_board1 = player_1.score(ships_1.board,
-                                                                       attack_board_player_1,
-                                                                       ships_2.board, ships_2.all_ship_coords,
-                                                                       random_status_game_1, gui_status)
-    print_desk_gui(show_my_board1, canv1)
-    print_desk_gui(show_comp_board1, canv2)
-    print("Игрок №1 " + str(game_score_1))
-    os.system('cls')
-    if game_score_1 == 20:
-        print("Игрок 1 победил!")
+    if player_1.one_more_chance == 1 or player_1.one_more_chance == 2:
+        print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
+        game_score_1, ships_2.board, one_more_chance_1, show_comp_board1 = player_1.score(ships_1.board,
+                                                                           attack_board_player_1,
+                                                                           ships_2.board, ships_2.all_ship_coords,
+                                                                           random_status_game_1, gui_status)
+        print_desk_gui(show_comp_board1, canv2)
+        print("Игрок №1 " + str(game_score_1))
+        if game_score_1 == 20:
+            print("Игрок 1 победил!")
 
-    # if one_more_chance_2 == 1 or one_more_chance_2 == 2:
-    print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
-    game_score_2, ships_1.board, one_more_chance_2, show_my_board2, show_comp_board2 = player_2.score(ships_2.board,
-                                                                       attack_board_player_2,
-                                                                       ships_1.board, ships_1.all_ship_coords,
-                                                                       random_status_game_2, gui_status)
-    print("Игрок №2 " + str(game_score_2))
-    if game_score_2 == 20:
-        print("Игрок 2 победил!")
+        if player_1.one_more_chance == 0 or player_1.one_more_chance == 3: #Если я промазал то сразу же ход второго игрока
+            print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
+            canv1.after(500)
+            game_score_2, ships_1.board, one_more_chance_2, show_comp_board2 = player_2.score(ships_2.board,
+                                                                                              attack_board_player_2,
+                                                                                              ships_1.board,
+                                                                                              ships_1.all_ship_coords,
+                                                                                              random_status_game_2,
+                                                                                              gui_status)
+            print_desk_gui(show_comp_board2, canv1)
+            print("Игрок №2 " + str(game_score_2))
+            if game_score_2 == 20:
+                print("Игрок 2 победил!")
+
+    elif player_2.one_more_chance == 1 or player_2.one_more_chance == 2: # если игрок 2 не мажет то продолжает ходить
+        canv1.after(500)
+        print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
+        game_score_2, ships_1.board, one_more_chance_2, show_comp_board2 = player_2.score(ships_2.board,
+                                                                                          attack_board_player_2,
+                                                                                          ships_1.board,
+                                                                                          ships_1.all_ship_coords,
+                                                                                          random_status_game_2,
+                                                                                          gui_status)
+        print_desk_gui(show_comp_board2, canv1)
+        print("Игрок №2 " + str(game_score_2))
+        if game_score_2 == 20:
+            print("Игрок 2 победил!")
+
+        while player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
+            canv1.after(500)
+            print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
+            game_score_2, ships_1.board, one_more_chance_2, show_comp_board2 = player_2.score(ships_2.board,
+                                                                               attack_board_player_2,
+                                                                               ships_1.board, ships_1.all_ship_coords,
+                                                                               random_status_game_2, gui_status)
+            print_desk_gui(show_comp_board2, canv1)
+            print("Игрок №2 " + str(game_score_2))
+            if game_score_2 == 20:
+                print("Игрок 2 победил!")
+
+    elif player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
+        print("\n" + "{:^110}".format(" Ход игрока №1 ") + "\n")
+        game_score_1, ships_2.board, one_more_chance_1, show_comp_board1 = player_1.score(ships_1.board,
+                                                                                          attack_board_player_1,
+                                                                                          ships_2.board,
+                                                                                          ships_2.all_ship_coords,
+                                                                                          random_status_game_1,
+                                                                                          gui_status)
+        print_desk_gui(show_comp_board1, canv2)
+        print("Игрок №1 " + str(game_score_1))
+        if game_score_1 == 20:
+            print("Игрок 1 победил!")
+
+
+        if player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
+            canv1.after(500)
+            print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
+            game_score_2, ships_1.board, one_more_chance_2, show_comp_board2 = player_2.score(ships_2.board,
+                                                                                              attack_board_player_2,
+                                                                                              ships_1.board,
+                                                                                              ships_1.all_ship_coords,
+                                                                                              random_status_game_2,
+                                                                                              gui_status)
+            print_desk_gui(show_comp_board2, canv1)
+            print("Игрок №2 " + str(game_score_2))
+            if game_score_2 == 20:
+                print("Игрок 2 победил!")
+
 
 
 def game_for_two():
@@ -781,18 +836,17 @@ def print_desk_gui(board, canv):
     for counter_row in range(1, 11):
         for counter_col in range(1, 11):
             for point in board[counter_row][counter_col]:
-                if point == u'\u2588':
-                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#726bff', outline="blue")
-                elif point == u'\u2591':
-                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#ba47fc', outline="#c038ff")
-                elif point == u'\u2593':
-                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#ba47fc', outline="red")
+                if point == u'\u2588':  # корабль
+                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#0008a1', outline="blue", tag="game_obj")
+                elif point == u'\u2591':  # убитый корабль
+                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#1d1f40', outline="#6500a3", tag="game_obj")
+                elif point == u'\u2593':  # попали по кораблю
+                    canv.create_rectangle(20+(counter_col-1)*30, 20+(counter_row-1)*30, 50+(counter_col-1)*30, 50+(counter_row-1)*30, fill='#750000', outline="red", tag="game_obj")
                 elif point == "*":
-                    canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#005', outline="blue")
+                    canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#005', outline="blue", tag="game_obj")
                 elif point == "X":
-                    canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#4f7af0', outline="red")
+                    canv.create_oval(30+(counter_col-1)*30, 30+(counter_row-1)*30, 40+(counter_col-1)*30, 40+(counter_row-1)*30, fill='#4f7af0', outline="red", tag="game_obj")
     root.update()
-
 
 
 def canvas_line(canv):  # Линии на досках
@@ -816,6 +870,10 @@ def canvas_coords_name(canv):
         canv.create_text(10, 35 + k, text=x+1, fill="blue")
         canv.create_text(330, 35 + k, text=x+1, fill="blue")
 
+
+def canvas_clear(canv):
+    canv.delete("game_obj")
+
 root = Tk()
 root.title("Battleship 3.0")
 root.resizable(False,False)
@@ -823,9 +881,9 @@ root.resizable(False,False)
 main_menu = Menu(root)
 root.configure(menu=main_menu)
 
-label1 = Label(root, text="Игрок 1")
+label1 = Label(root, text="Твоя доска")
 label1.grid(row=0, column=0)
-label2 = Label(root, text="Игрок 2")
+label2 = Label(root, text="Доска соперника")
 label2.grid(row=0, column=3)
 
 canv1 = Canvas(root, width=340, height=340, bg='#001', cursor="boat")
