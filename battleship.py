@@ -647,18 +647,37 @@ def game_gui():
             print("Игрок 2 победил!")
 
     if random_status_game_2 == 1:
-
+        global strike_counter
         if player_1.one_more_chance == 1 or player_1.one_more_chance == 2:
             player_one_strike()
+            if player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
+                canv2.unbind("<Button-1>")
+                canv2.config(bg='#223', cursor="watch")
+                canv2_win2.bind("<Button-1>", mouse_input)
+                canv2_win2.config(bg='#001', cursor="target")
         elif player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
             player_two_strike()
-        elif strike_counter == 0 and (player_1.one_more_chance == 0 or player_1.one_more_chance == 3):
+            if player_2.one_more_chance == 0 or player_2.one_more_chance == 3:
+                canv2_win2.unbind("<Button-1>")
+                canv2_win2.config(bg='#223', cursor="watch")
+                canv2.bind("<Button-1>", mouse_input)
+                canv2.config(bg='#001', cursor="target")
+        elif (player_1.one_more_chance == 0 or player_1.one_more_chance == 3) and  strike_counter == 0:
             player_one_strike()
             strike_counter += 1
-        elif strike_counter == 1 and (player_2.one_more_chance == 0 or player_2.one_more_chance == 3):
+            if player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
+                canv2.unbind("<Button-1>")
+                canv2.config(bg='#223', cursor="watch")
+                canv2_win2.bind("<Button-1>", mouse_input)
+                canv2_win2.config(bg='#001', cursor="target")
+        elif(player_2.one_more_chance == 0 or player_2.one_more_chance == 3) and strike_counter == 1:
             player_two_strike()
             strike_counter -= 1
-
+            if player_2.one_more_chance == 0 or player_2.one_more_chance == 3:
+                canv2_win2.unbind("<Button-1>")
+                canv2_win2.config(bg='#223', cursor = "watch")
+                canv2.bind("<Button-1>", mouse_input)
+                canv2.config(bg='#001', cursor = "target")
 
     elif random_status_game_2 == 2:
         if player_1.one_more_chance == 1 or player_1.one_more_chance == 2:
@@ -667,12 +686,10 @@ def game_gui():
                 player_two_strike()
                 while player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
                     player_two_strike()
-
         elif player_2.one_more_chance == 1 or player_2.one_more_chance == 2: # если игрок 2 не мажет то продолжает ходить
             player_two_strike()
             while player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
                 player_two_strike()
-
         elif player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
             player_one_strike()
             if player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
@@ -696,11 +713,9 @@ def game_for_one():
     global attack_board_player_2
     global random_status_game_1
     global random_status_game_2
-    global strike_counter
 
     random_status_game_1 = 1  # range_int(1, 2, "Игрок №1: Как стрелять (1 - руками, 2 - рандомно): ")
     random_status_game_2 = 2  # range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
-    strike_counter = 0
 
     ships_1 = MyShips(x, y)
     test_board = ships_1.generateBoard()
@@ -744,21 +759,16 @@ def game_for_two():
     canvas_coords_name(canv1_win2)
     canv1_win2.grid(row=1, column=0)
     global canv2_win2
-    canv2_win2 = Canvas(win2, width=340, height=340, bg='#001', cursor="target")
+    canv2_win2 = Canvas(win2, width=340, height=340, bg='#223', cursor="watch")
     canvas_line(canv2_win2)
     canvas_coords_name(canv2_win2)
     canv2_win2.grid(row=1, column=3)
 
-    canv_separator_win2 = Canvas(win2, width=50, height=30)
+    canv_separator_win2 = Canvas(win2, width=50, height=10)
     canv_separator_win2.grid(row=3, column=2)
-
-    canv2_win2.bind("<Button-1>", mouse_input)
-
 
     canvas_clear(canv1)
     canvas_clear(canv2)
-    canvas_clear(canv1_win2)
-    canvas_clear(canv2_win2)
 
     x = 10
     y = 10
@@ -771,9 +781,11 @@ def game_for_two():
     global attack_board_player_2
     global random_status_game_1
     global random_status_game_2
+    global strike_counter
 
     random_status_game_1 = 1  # range_int(1, 2, "Игрок №1: Как стрелять (1 - руками, 2 - рандомно): ")
     random_status_game_2 = 1  # range_int(1, 2, "Игрок №2: Как стрелять (1 - руками, 2 - рандомно): ")
+    strike_counter = 0
 
     ships_1 = MyShips(x, y)
     test_board = ships_1.generateBoard()
@@ -840,13 +852,13 @@ def canvas_line(canv):  # Линии на досках
 def canvas_coords_name(canv):
     for y in range(10):
         k = 30 * y
-        canv.create_text(35 + k, 10, text=ascii_letters[y], fill="blue")
-        canv.create_text(35 + k, 330, text=ascii_letters[y], fill="blue")
+        canv.create_text(35 + k, 10, text=ascii_letters[y], fill="#888")
+        canv.create_text(35 + k, 330, text=ascii_letters[y], fill="#888")
 
     for x in range(10):
         k = 30 * x
-        canv.create_text(10, 35 + k, text=x+1, fill="blue")
-        canv.create_text(330, 35 + k, text=x+1, fill="blue")
+        canv.create_text(10, 35 + k, text=x+1, fill="#888")
+        canv.create_text(330, 35 + k, text=x+1, fill="#888")
 
 
 def canvas_clear(canv):
@@ -862,7 +874,7 @@ root.configure(menu=main_menu)
 label1 = Label(root, text="Твоя доска")
 label1.grid(row=0, column=0)
 label2 = Label(root, text="Доска соперника")
-label2.grid(row=0, column=3)
+label2.grid(row=0, column=2)
 
 canv1 = Canvas(root, width=340, height=340, bg='#001', cursor="boat")
 canvas_line(canv1)
@@ -871,17 +883,15 @@ canv1.grid(row=1, column=0)
 canv2 = Canvas(root, width=340, height=340, bg='#001', cursor="target")
 canvas_line(canv2)
 canvas_coords_name(canv2)
-canv2.grid(row=1, column=3)
+canv2.grid(row=1, column=2)
 
-canv_separator = Canvas(root, width=50, height=30)
-canv_separator.grid(row=3, column=2)
+canv_separator = Canvas(root, width=50, height=10)
+canv_separator.grid(row=3, column=1)
 
 first_item = Menu(main_menu, tearoff=0)
 main_menu.add_cascade(label="Новая игра", menu=first_item)
 first_item.add_command(label="1 Игрок", command=game_for_one)
 first_item.add_command(label="2 Игрока", command=game_for_two)
-first_item.add_separator()
-first_item.add_command(label="Настройка", command=game_settings)
 first_item.add_separator()
 first_item.add_command(label="Выход", command=exit_app)
 
