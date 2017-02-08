@@ -280,9 +280,9 @@ class LoseOrWin(Board):
                             print("=================== ВОЗМОЖНО Ошибка координат 2.1")
                             guess_col = self.shoot_col
                             if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 1:
-                                guess_row = self.my_strikes[-1][1] - (self.ship_point_counter + 1)
+                                guess_row = self.my_strikes[-1][1] - self.ship_point_counter
                             elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == -1:
-                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter + 1
+                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter
 
                     elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == 0: # Значит координаты не меняются по игрику (ряд)
                         if self.my_strikes[-1][0] + 1 < 11 and \
@@ -306,9 +306,9 @@ class LoseOrWin(Board):
                             print("=================== ВОЗМОЖНО Ошибка координат 2.2")
                             guess_row = self.shoot_row
                             if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 1:
-                                guess_col = self.my_strikes[-1][0] - (self.ship_point_counter + 1)
+                                guess_col = self.my_strikes[-1][0] - self.ship_point_counter
                             elif self.my_strikes[-1][0] - self.my_strikes[-2][0] == -1:
-                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter + 1
+                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter
 
                     elif self.my_strikes[-1][0] - self.my_strikes[-3][0] == 0:  # Значит координаты не меняются по иксу (колонна)
                         if self.my_strikes[-1][1] + 1 < 11 and \
@@ -331,9 +331,9 @@ class LoseOrWin(Board):
                             print("=================== ВОЗМОЖНО Ошибка координат 2.3")
                             guess_col = self.shoot_col
                             if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 1:
-                                guess_row = self.my_strikes[-1][1] - (self.ship_point_counter + 1)
+                                guess_row = self.my_strikes[-1][1] - self.ship_point_counter
                             elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == -1:
-                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter + 1
+                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter
 
                     elif self.my_strikes[-1][1] - self.my_strikes[-3][1] == 0: # Значит координаты не меняются по игрику (ряд)
                         if self.my_strikes[-1][0] + 1 < 11 and \
@@ -357,9 +357,9 @@ class LoseOrWin(Board):
                             print("=================== ВОЗМОЖНО Ошибка координат 2.4")
                             guess_row = self.shoot_row
                             if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 1:
-                                guess_col = self.my_strikes[-1][0] - (self.ship_point_counter + 1)
+                                guess_col = self.my_strikes[-1][0] - self.ship_point_counter
                             elif self.my_strikes[-1][0] - self.my_strikes[-2][0] == -1:
-                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter + 1
+                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter
 
                     elif self.my_strikes[-1][0] - self.my_strikes[-4][0] == 0:  # Значит координаты не меняются по иксу (колонна)
                         if self.my_strikes[-1][1] + 1 < 11 and \
@@ -382,9 +382,9 @@ class LoseOrWin(Board):
                             print("=================== ВОЗМОЖНО Ошибка координат 2.5")
                             guess_col = self.shoot_col
                             if self.my_strikes[-1][1] - self.my_strikes[-2][1] == 1:
-                                guess_row = self.my_strikes[-1][1] - (self.ship_point_counter + 1)
+                                guess_row = self.my_strikes[-1][1] - self.ship_point_counter
                             elif self.my_strikes[-1][1] - self.my_strikes[-2][1] == -1:
-                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter + 1
+                                guess_row = self.my_strikes[-1][1] + self.ship_point_counter
 
                     elif self.my_strikes[-1][1] - self.my_strikes[-4][1] == 0: # Значит координаты не меняются по игрику (ряд)
                         if self.my_strikes[-1][0] + 1 < 11 and \
@@ -408,9 +408,9 @@ class LoseOrWin(Board):
                             print("=================== ВОЗМОЖНО Ошибка координат 2.6")
                             guess_row = self.shoot_row
                             if self.my_strikes[-1][0] - self.my_strikes[-2][0] == 1:
-                                guess_col = self.my_strikes[-1][0] - (self.ship_point_counter + 1)
+                                guess_col = self.my_strikes[-1][0] - self.ship_point_counter
                             elif self.my_strikes[-1][0] - self.my_strikes[-2][0] == -1:
-                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter + 1
+                                guess_col = self.my_strikes[-1][0] + self.ship_point_counter
 
             elif self.one_more_chance == 3 and not self.kill_allship: # Если уже попадал по кораблю не потопил, но потом промазал
 
@@ -594,6 +594,7 @@ from random import randint
 from string import ascii_letters
 import os
 from tkinter import *
+from tkinter.messagebox import *
 
 
 def mouse_input(event):
@@ -631,6 +632,15 @@ def game_gui():
         print("Игрок №1 " + str(game_score_1))
         if game_score_1 == 20:
             print("Игрок 1 победил!")
+            showinfo("Победа", "Игрок 1 победил!")
+            after_win = askokcancel("Реванш?", "Хотите сыграть ещё одну партию?")
+            if after_win == 1 and random_status_game_2 == 2:
+                game_for_one()
+            elif after_win == 1 and random_status_game_2 == 1:
+                win2.destroy()
+                game_for_two()
+            elif after_win == 0:
+                exit_app()
 
     def player_two_strike():
         print("\n" + "{:^110}".format(" Ход игрока №2 ") + "\n")
@@ -645,6 +655,15 @@ def game_gui():
         print("Игрок №2 " + str(game_score_2))
         if game_score_2 == 20:
             print("Игрок 2 победил!")
+            showinfo("Победа", "Игрок 2 победил!")
+            after_win = askokcancel("Реванш?", "Хотите сыграть ещё одну партию?")
+            if after_win == 1 and random_status_game_2 == 2:
+                game_for_one()
+            elif after_win == 1 and random_status_game_2 == 1:
+                win2.destroy()
+                game_for_two()
+            elif after_win == 0:
+                exit_app()
 
     if random_status_game_2 == 1:
         global strike_counter
@@ -682,20 +701,28 @@ def game_gui():
     elif random_status_game_2 == 2:
         if player_1.one_more_chance == 1 or player_1.one_more_chance == 2:
             player_one_strike()
+            canv2.unbind("<Button-1>")
+            canv2.config(cursor="watch")
             if player_1.one_more_chance == 0 or player_1.one_more_chance == 3: #Если я промазал то сразу же ход второго игрока
                 player_two_strike()
                 while player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
                     player_two_strike()
-        elif player_2.one_more_chance == 1 or player_2.one_more_chance == 2: # если игрок 2 не мажет то продолжает ходить
-            player_two_strike()
-            while player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
-                player_two_strike()
+            canv2.bind("<Button-1>", mouse_input)
+            canv2.config(cursor="target")
+        # elif player_2.one_more_chance == 1 or player_2.one_more_chance == 2: # если игрок 2 не мажет то продолжает ходить
+        #     player_two_strike()
+        #     while player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
+        #         player_two_strike()
         elif player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
             player_one_strike()
+            canv2.unbind("<Button-1>")
+            canv2.config(cursor="watch")
             if player_1.one_more_chance == 0 or player_1.one_more_chance == 3:
                 player_two_strike()
                 while player_2.one_more_chance == 1 or player_2.one_more_chance == 2:
                     player_two_strike()
+            canv2.bind("<Button-1>", mouse_input)
+            canv2.config(cursor="target")
 
 
 def game_for_one():
@@ -743,6 +770,9 @@ def game_for_one():
 
 
 def game_for_two():
+    canvas_clear(canv1)
+    canvas_clear(canv2)
+
     global win2
     win2 = Toplevel(root)
     win2.title("Battleship 3.0 - 2 Игрок")
@@ -766,9 +796,6 @@ def game_for_two():
 
     canv_separator_win2 = Canvas(win2, width=50, height=10)
     canv_separator_win2.grid(row=3, column=2)
-
-    canvas_clear(canv1)
-    canvas_clear(canv2)
 
     x = 10
     y = 10
@@ -863,6 +890,7 @@ def canvas_coords_name(canv):
 
 def canvas_clear(canv):
     canv.delete("game_obj")
+    canv.config(bg='#001', cursor="target")
 
 root = Tk()
 root.title("Battleship 3.0 - 1 Игрок")
